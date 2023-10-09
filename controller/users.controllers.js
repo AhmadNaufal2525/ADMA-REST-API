@@ -33,7 +33,7 @@ module.exports.signIn = (req, res) => {
           }
         });
       } else {
-        res.status(404).json({ error: { message: "User not found" } });
+        res.status(404).json({ error: { message: "Email not register" } });
       }
     })
     .catch(() => {
