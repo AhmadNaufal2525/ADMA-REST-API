@@ -33,11 +33,11 @@ module.exports.signIn = (req, res) => {
           }
         });
       } else {
-        res.status(404).json({ error: { message: "User not found", err } });
+        res.status(404).json({ error: { message: "User not found" } });
       }
     })
-    .catch((err) => {
-      res.status(500).json({ error: { message: "Error while signing in"} });
+    .catch(() => {
+      res.status(500).json({ error: { message: "Error while signing in", err } });
     });
 };
 
