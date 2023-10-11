@@ -28,6 +28,7 @@ module.exports.signIn = (req, res) => {
               data: {
                 email: admin.email,
                 username: admin.username,
+                role: admin.role
               },
               accessToken,
             });
