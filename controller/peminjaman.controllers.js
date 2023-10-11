@@ -2,8 +2,8 @@ const PeminjamanModel = require('../models/peminjaman.model');
 const AsetModel = require('../models/aset.model');
 const UserModel = require('../models/users.model');
 module.exports.createPeminjaman = (req, res) => {
-  const { lokasi, kondisi_aset, tanggal_peminjaman, tujuan_peminjaman, assetId, userId } = req.body;
-  AsetModel.findById(assetId)
+  const { lokasi, kondisi_aset, tanggal_peminjaman, tujuan_peminjaman, tagNumber, userId } = req.body;
+    AsetModel.findOne({ tag_number: tagNumber })
     .then((asset) => {
       if (!asset) {
         return res.status(404).json({
@@ -36,7 +36,7 @@ module.exports.createPeminjaman = (req, res) => {
             kondisi_aset,
             tanggal_peminjaman,
             tujuan_peminjaman,
-            asset: assetId,
+            asset: asset._id,
             user: userId,
           });
 
