@@ -20,7 +20,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 // app.use(verifyToken)
 app.use('/api/v1/auth', userRouter);
 app.use('/api/v1/data', asetsRouter);
-app.use('/api/v1/auth', adminRouter);
+app.use('/api/v1/admin', adminRouter);
 
 const port = process.env.PORT || 8000;
 
