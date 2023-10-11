@@ -37,8 +37,8 @@ module.exports.createPeminjaman = (req, res) => {
             kondisi_aset,
             tanggal_peminjaman,
             tujuan_peminjaman,
-            asset: asset._id,
-            user: user._id,
+            id_aset: asset._id,
+            id_user: user._id,
             status: "Pending",
           });
 
