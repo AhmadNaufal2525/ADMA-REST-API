@@ -2,16 +2,24 @@ const PeminjamanModel = require('../models/peminjaman.model');
 const AsetModel = require('../models/aset.model');
 const UserModel = require('../models/users.model');
 module.exports.createPeminjaman = (req, res) => {
-  const { lokasi, kondisi_aset, tanggal_peminjaman, tujuan_peminjaman, tagNumber, userId } = req.body;
-    AsetModel.findOne({ tag_number: tagNumber })
-    .then((asset) => {
-      if (!asset) {
-        return res.status(404).json({
-          error: {
-            message: "Asset not found",
-          },
-        });
-      }
+  const { lokasi, kondisi_aset, tanggal_peminjaman, tujuan_peminjaman, assetId, userId } = req.body;
+  AsetModel.findById(assetId)
+  .then((asset) => {
+    if (!asset) {
+      return res.status(404).json({
+        error: {
+          message: "Asset not found",
+        },
+      });
+    }
+
+    if (asset.is_borrowed) {
+      return res.status(400).json({
+        error: {
+          message: "Asset is already borrowed",
+        },
+      });
+    }
 
       if (asset.is_borrowed) {
         return res.status(400).json({
@@ -37,7 +45,8 @@ module.exports.createPeminjaman = (req, res) => {
             tanggal_peminjaman,
             tujuan_peminjaman,
             asset: asset._id,
-            user: userId,
+            user: user._id,
+            status: "Pending",
           });
 
           newPeminjaman.save()
