@@ -18,6 +18,10 @@ const AsetSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    lokasi_alat: {
+        type: String,
+        required: true
+    },
     nomor_seri: {
         type: String,
         required: true
