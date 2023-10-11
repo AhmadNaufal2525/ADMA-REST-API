@@ -1,7 +1,7 @@
 const AsetModel = require("../models/aset");
 
 module.exports.getAssets = (req, res) => {
-  AsetModel.find({})
+  AsetModel.find({}).lean()
     .then((assets) => {
       if (assets.length === 0) {
         res.status(404).json({
