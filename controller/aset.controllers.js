@@ -83,7 +83,7 @@ module.exports.getAssetByTagNumber = (req, res) => {
 };
 
 module.exports.addNewAsset = (req, res) => {
-  const { nama_alat, tag_number, merek, tipe, nomor_seri, penanggung_jawab, lokasi_alat } = req.body;
+  const { nama_alat, tag_number, merek, tipe, nomor_seri, penanggung_jawab, lokasi_aset } = req.body;
   AsetModel.findOne({ $or: [{ nama_alat }, { tag_number }] })
     .then((existingAsset) => {
       if (existingAsset) {
@@ -99,7 +99,7 @@ module.exports.addNewAsset = (req, res) => {
           merek,
           tipe,
           nomor_seri,
-          lokasi_alat,
+          lokasi_aset,
           penanggung_jawab,
           is_borrowed: false,
         });

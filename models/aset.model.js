@@ -18,7 +18,7 @@ const AsetSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    lokasi_alat: {
+    lokasi_aset: {
         type: String,
         required: true
     },

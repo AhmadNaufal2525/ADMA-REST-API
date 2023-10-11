@@ -58,7 +58,7 @@ module.exports.createPeminjaman = (req, res) => {
                         tipe: asset.tipe,
                         nomor_seri: asset.nomor_seri,
                         penanggung_jawab: asset.penanggung_jawab,
-                        lokasi_alat: asset.lokasi_alat,
+                        lokasi_aset: asset.lokasi_aset,
                       },
                       user: {
                         username: user.username,
