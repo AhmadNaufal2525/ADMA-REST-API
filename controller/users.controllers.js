@@ -46,7 +46,7 @@ module.exports.protectedRoute = (req, res) => {
 };
 
 module.exports.signUp = (req, res) => {
-  const { username, email, password, unit } = req.body;
+  const { username, email, password } = req.body;
   UsersModel.findOne({ email })
     .then((existingUser) => {
       if (existingUser) {
@@ -64,7 +64,6 @@ module.exports.signUp = (req, res) => {
             username,
             email,
             password: hashedPassword,
-            unit
           });
           newUser
             .save()
@@ -83,7 +82,6 @@ module.exports.signUp = (req, res) => {
                   id: user._id,
                   email: user.email,
                   username: user.username,
-                  unit: user.unit,
                   createdAt: user.createdAt
                 },
                 accessToken,

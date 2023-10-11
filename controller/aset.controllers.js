@@ -1,7 +1,7 @@
 const AsetModel = require("../models/aset");
 
 module.exports.getAssets = (req, res) => {
-  AsetModel.find({})
+  AsetModel.find({}).lean()
     .then((assets) => {
       if (assets.length === 0) {
         res.status(404).json({
@@ -81,3 +81,55 @@ module.exports.getAssetByTagNumber = (req, res) => {
       });
     });
 };
+
+module.exports.addNewAsset = (req, res) => {
+  const { nama_alat, tag_number, merek, tipe, nomor_seri, penanggung_jawab } = req.body;
+  AsetModel.findOne({ $or: [{ nama_alat }, { tag_number }] })
+    .then((existingAsset) => {
+      if (existingAsset) {
+        res.status(400).json({
+          error: {
+            message: "Asset already exists",
+          },
+        });
+      } else {
+        const newAsset = new AsetModel({
+          nama_alat,
+          tag_number,
+          merek,
+          tipe,
+          nomor_seri,
+          penanggung_jawab,
+          is_borrowed: false,
+        });
+
+        newAsset
+          .save()
+          .then((asset) => {
+            res.status(201).json({
+              message: "Asset added successfully",
+              data: asset,
+            });
+          })
+          .catch((err) => {
+            res.status(500).json({
+              error: {
+                message: "Error adding asset",
+                details: err.message,
+              },
+            });
+          });
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: {
+          message: "Error checking for existing assets",
+          details: err.message,
+        },
+      });
+    });
+};
+
+
+
