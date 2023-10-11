@@ -4,6 +4,7 @@ module.exports.createPeminjaman = async (req, res) => {
    try {
      const peminjamanData = req.body;
      const peminjaman = await PeminjamanModel.create(peminjamanData);
+     peminjamanData.status = "Pending";
      const asetId = peminjamanData.id_aset;
      const updatedAset = await AsetModel.findByIdAndUpdate(asetId, { is_borrowed: true }, { new: true });
  
