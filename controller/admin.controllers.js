@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const AdminModel = require("../models/admin");
+const AdminModel = require("../models/admin.model");
 const revokedTokens = new Set();
 
 module.exports.protectedRoute = (req, res) => {

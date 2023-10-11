@@ -4,6 +4,7 @@ const cors = require("cors");
 const userRouter = require("./routes/users.route");
 const asetsRouter = require("./routes/asets.route");
 const adminRouter = require("./routes/admin.route");
+const pinjamRouter = require("./routes/peminjaman.route");
 // const { verifyToken } = require("./middleware/verifyToken");
 
 require("dotenv").config();
@@ -21,6 +22,8 @@ mongoose.connect(process.env.MONGODB_URI, {
 app.use('/api/v1/auth', userRouter);
 app.use('/api/v1/data', asetsRouter);
 app.use('/api/v1/admin', adminRouter);
+app.use('/api/v1/aset', pinjamRouter);
+
 
 const port = process.env.PORT || 8000;
 

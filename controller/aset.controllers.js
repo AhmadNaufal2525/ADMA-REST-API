@@ -1,4 +1,4 @@
-const AsetModel = require("../models/aset");
+const AsetModel = require("../models/aset.model");
 
 module.exports.getAssets = (req, res) => {
   AsetModel.find({})

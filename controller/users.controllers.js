@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const UsersModel = require("../models/users");
+const UsersModel = require("../models/users.model");
 const revokedTokens = new Set();
   
 

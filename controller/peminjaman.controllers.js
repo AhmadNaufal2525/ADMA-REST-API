@@ -1,38 +1,48 @@
-const PeminjamanModel = require('../models/peminjaman');
-const AsetModel = require('../models/aset');
-const UsersModel = require('../models/users');
+const PeminjamanModel = require('../models/peminjaman.model');
 
-app.post("/api/v1/aset/peminjaman/:assetName", async (req, res) => {
+module.exports.createPeminjaman = async (req, res) => {
    try {
-      const { assetName } = req.params.nama_alat;
-      const { username } = req.params.username;
-      const user = await UsersModel.findOne({ username });
+     const peminjamanData = req.body;
+     const peminjaman = await PeminjamanModel.create(peminjamanData);
+     const asetId = peminjamanData.id_aset;
+     const updatedAset = await AsetModel.findByIdAndUpdate(asetId, { is_borrowed: true }, { new: true });
+ 
+     if (!updatedAset) {
+       return res.status(404).json({ error: 'Aset tidak ditemukan' });
+     }
 
-      if (!user) {
-         return res.status(404).json({ error: "User not found" });
-      }
-      const asset = await AsetModel.findOne({ nama_alat: assetName });
-
-      if (!asset) {
-         return res.status(404).json({ error: "Asset not found" });
-      }
-
-      const newPeminjaman = new PeminjamanModel({
-         userId: user._id,
-         lokasi: req.body.lokasi,
-         kondisi_aset: req.body.kondisi_aset,
-         tanggal_peminjaman: req.body.tanggal_peminjaman,
-         tujuan_peminjaman: req.body.tujuan_peminjaman,
-         status: "Pending", 
-      });
-      
-      await newPeminjaman.save();
-      asset.is_borrowed = true;
-      await asset.save();
-
-      res.status(201).json({ message: "Asset borrowed successfully", asset: asset });
+     const user = await UserModel.findById(peminjamanData.id_user);
+     
+     res.status(201).json({
+       success: 'Peminjaman berhasil dibuat',
+       peminjaman,
+       updatedAset,
+       username: user ? user.username : 'User not found',
+     });
    } catch (error) {
-      console.error("Error borrowing asset:", error);
-      res.status(500).json({ error: "Internal server error" });
+     res.status(500).json({ error: 'Gagal membuat peminjaman: ' + error.message });
    }
-});
+ };
+ 
+
+module.exports.getAllPeminjaman = async (req, res) => {
+  try {
+    const peminjaman = await PeminjamanModel.find();
+    res.status(200).json({ message: 'Daftar peminjaman berhasil diambil', peminjaman });
+  } catch (error) {
+    res.status(500).json({ error: 'Gagal mengambil daftar peminjaman: ' + error.message });
+  }
+};
+
+module.exports.getPeminjamanById = async (req, res) => {
+  try {
+    const peminjamanId = req.params.id;
+    const peminjaman = await PeminjamanModel.findById(peminjamanId);
+    if (!peminjaman) {
+      return res.status(404).json({ error: 'Peminjaman tidak ditemukan' });
+    }
+    res.status(200).json({ message: 'Peminjaman berhasil diambil', peminjaman });
+  } catch (error) {
+    res.status(500).json({ error: 'Gagal mengambil peminjaman: ' + error.message });
+  }
+};
