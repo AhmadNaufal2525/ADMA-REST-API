@@ -1,30 +1,101 @@
 const PeminjamanModel = require('../models/peminjaman.model');
 
-module.exports.createPeminjaman = async (req, res) => {
-   try {
-     const peminjamanData = req.body;
-     const peminjaman = await PeminjamanModel.create(peminjamanData);
-     peminjamanData.status = "Pending";
-     const asetId = peminjamanData.id_aset;
-     const updatedAset = await AsetModel.findByIdAndUpdate(asetId, { is_borrowed: true }, { new: true });
- 
-     if (!updatedAset) {
-       return res.status(404).json({ error: 'Aset tidak ditemukan' });
-     }
+module.exports.createPeminjaman = (req, res) => {
+  const { lokasi, kondisi_aset, tanggal_peminjaman, tujuan_peminjaman, assetId, userId } = req.body;
 
-     const user = await UserModel.findById(peminjamanData.id_user);
-     
-     res.status(201).json({
-       success: 'Peminjaman berhasil dibuat',
-       peminjaman,
-       updatedAset,
-       username: user ? user.username : 'User not found',
-     });
-   } catch (error) {
-     res.status(500).json({ error: 'Gagal membuat peminjaman: ' + error.message });
-   }
- };
- 
+  AsetModel.findById(assetId)
+    .then((asset) => {
+      if (!asset) {
+        return res.status(404).json({
+          error: {
+            message: "Asset not found",
+          },
+        });
+      }
+
+      if (asset.is_borrowed) {
+        return res.status(400).json({
+          error: {
+            message: "Asset is already borrowed",
+          },
+        });
+      }
+
+      UserModel.findById(userId)
+        .then((user) => {
+          if (!user) {
+            return res.status(404).json({
+              error: {
+                message: "User not found",
+              },
+            });
+          }
+
+          const newPeminjaman = new PeminjamanModel({
+            lokasi,
+            kondisi_aset,
+            tanggal_peminjaman,
+            tujuan_peminjaman,
+            asset: assetId,
+            user: userId,
+          });
+
+          newPeminjaman.save()
+            .then((peminjaman) => {
+              asset.is_borrowed = true;
+              asset.save()
+                .then(() => {
+                  res.status(201).json({
+                    message: "Peminjaman berhasil dibuat",
+                    data: {
+                      peminjaman,
+                      asset: {
+                        nama_alat: asset.nama_alat,
+                      },
+                      user: {
+                        username: user.username,
+                      },
+                    },
+                  });
+                })
+                .catch((assetErr) => {
+                  res.status(500).json({
+                    error: {
+                      message: "Error updating asset status",
+                      details: assetErr.message,
+                    },
+                  });
+                });
+            })
+            .catch((peminjamanErr) => {
+              res.status(500).json({
+                error: {
+                  message: "Error creating peminjaman",
+                  details: peminjamanErr.message,
+                },
+              });
+            });
+        })
+        .catch((userErr) => {
+          res.status(500).json({
+            error: {
+              message: "Error finding user",
+              details: userErr.message,
+            },
+          });
+        });
+    })
+    .catch((assetErr) => {
+      res.status(500).json({
+        error: {
+          message: "Error finding asset",
+          details: assetErr.message,
+        },
+      });
+    });
+};
+
+
 
 module.exports.getAllPeminjaman = async (req, res) => {
   try {
