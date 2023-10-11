@@ -51,6 +51,11 @@ module.exports.createPeminjaman = (req, res) => {
                       peminjaman,
                       asset: {
                         nama_alat: asset.nama_alat,
+                        tag_number: asset.tag_number,
+                        merek: asset.merek,
+                        tipe: asset.tipe,
+                        nomor_seri: asset.nomor_seri,
+                        penanggung_jawab: asset.penanggung_jawab,
                       },
                       user: {
                         username: user.username,
@@ -94,8 +99,6 @@ module.exports.createPeminjaman = (req, res) => {
       });
     });
 };
-
-
 
 module.exports.getAllPeminjaman = async (req, res) => {
   try {
