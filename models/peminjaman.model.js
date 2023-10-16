@@ -21,7 +21,7 @@ const PeminjamanSchema = new mongoose.Schema({
         required: true
     },
     tanggal_peminjaman: {
-        type: Date,
+        type: String,
         required: true
     },
     tujuan_peminjaman: {
