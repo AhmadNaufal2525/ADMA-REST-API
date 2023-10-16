@@ -4,8 +4,26 @@ const AdminModel = require("../models/admin.model");
 const revokedTokens = new Set();
 
 module.exports.protectedRoute = (req, res) => {
-  res.status(200).json({ message: "Admin Protected Route Accessed" });
+  const token = req.headers.authorization;
+  if (!token || revokedTokens.has(token)) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ message: "Token is invalid" });
+    }
+    const { adminId, username } = decoded;
+
+    res.status(200).json({
+      message: "Admin Protected Route Accessed",
+      data: {
+        adminId,
+        username,
+      },
+    });
+  });
 };
+
 
 module.exports.signIn = (req, res) => {
   const { email, password } = req.body;
@@ -16,13 +34,12 @@ module.exports.signIn = (req, res) => {
         bcrypt.compare(password, admin.password, (err, result) => {
           if (result) {
             const accessToken = jwt.sign(
-              { adminId: admin._id },
+              { adminId: admin._id, username: admin.username },
               process.env.JWT_SECRET,
               {
                 expiresIn: "15m",
               }
             );
-
             res.status(200).json({
               message: "Login Successful",
               data: {
