@@ -23,6 +23,7 @@ module.exports.signIn = (req, res) => {
             res.status(200).json({
               message: "Login Successful",
               data: {
+                id: user._id,
                 email: user.email,
                 username: user.username,
               },
@@ -123,7 +124,6 @@ module.exports.getAllUsers = (req,res) => {
           id: user._id,
           email: user.email,
           username: user.username,
-          unit: user.unit,
           createdAt: user.createdAt
         })),
       });
