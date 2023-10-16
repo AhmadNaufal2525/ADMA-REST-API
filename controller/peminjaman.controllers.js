@@ -106,7 +106,7 @@ module.exports.createPeminjaman = (req, res) => {
 
 module.exports.getAllPeminjaman = async (req, res) => {
   try {
-    const peminjaman = await PeminjamanModel.find().populate('id_aset');
+    const peminjaman = await PeminjamanModel.find().populate('id_aset').populate('id_user', 'username');
     res.status(200).json({ message: 'Daftar peminjaman berhasil diambil', peminjaman });
   } catch (error) {
     res.status(500).json({ error: 'Gagal mengambil daftar peminjaman: ' + error.message });
