@@ -113,23 +113,19 @@ module.exports.getAllPeminjaman = async (req, res) => {
   }
 };
 
-module.exports.getPeminjamanById = async (req, res) => {
+module.exports.getPeminjamanByUserId = async (req, res) => {
   try {
-    const peminjamanId = req.params.id;
-    const peminjaman = await PeminjamanModel.findById(peminjamanId);
-
+    const userId = req.params.id;
+    const peminjaman = await PeminjamanModel.find({ id_user: userId });
     if (!peminjaman) {
       return res.status(404).json({ error: 'Peminjaman tidak ditemukan' });
     }
-    if (peminjaman.userId.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ error: 'Permission denied' });
-    }
-
     res.status(200).json({ message: 'Peminjaman berhasil diambil', peminjaman });
   } catch (error) {
     res.status(500).json({ error: 'Gagal mengambil peminjaman: ' + error.message });
   }
 };
+
 
 
 module.exports.acceptPeminjaman = (req, res) => {
