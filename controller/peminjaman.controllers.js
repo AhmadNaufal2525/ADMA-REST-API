@@ -3,16 +3,16 @@ const AsetModel = require('../models/aset.model');
 const UserModel = require('../models/users.model');
 
 module.exports.createPeminjaman = (req, res) => {
-  const { lokasi, kondisi_aset, tanggal_peminjaman, tujuan_peminjaman, assetName, username } = req.body;
-  AsetModel.findOne({ nama_alat: assetName })
-    .then((asset) => {
-      if (!asset) {
-        return res.status(404).json({
-          error: {
-            message: "Asset not found",
-          },
-        });
-      }
+  const { lokasi, kondisi_aset, tanggal_peminjaman, tujuan_peminjaman, tagNumber, username } = req.body;
+  AsetModel.findOne({ tag_number: tagNumber }) 
+  .then((asset) => {
+    if (!asset) {
+      return res.status(404).json({
+        error: {
+          message: "Asset not found",
+        },
+      });
+    }
 
       if (asset.is_borrowed) {
         return res.status(400).json({
