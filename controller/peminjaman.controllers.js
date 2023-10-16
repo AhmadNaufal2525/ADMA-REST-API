@@ -5,14 +5,14 @@ const UserModel = require('../models/users.model');
 module.exports.createPeminjaman = (req, res) => {
   const { lokasi, kondisi_aset, tanggal_peminjaman, tujuan_peminjaman, tagNumber, username } = req.body;
   AsetModel.findOne({ tag_number: tagNumber }) 
-    .then((asset) => {
-      if (!asset) {
-        return res.status(404).json({
-          error: {
-            message: "Asset not found",
-          },
-        });
-      }
+  .then((asset) => {
+    if (!asset) {
+      return res.status(404).json({
+        error: {
+          message: "Asset not found",
+        },
+      });
+    }
 
       if (asset.is_borrowed) {
         return res.status(400).json({
@@ -40,18 +40,6 @@ module.exports.createPeminjaman = (req, res) => {
             id_aset: asset._id,
             id_user: user._id,
             status: "Pending",
-            asset: { 
-              nama_alat: asset.nama_alat,
-              tag_number: asset.tag_number,
-              merek: asset.merek,
-              tipe: asset.tipe,
-              nomor_seri: asset.nomor_seri,
-              penanggung_jawab: asset.penanggung_jawab,
-              lokasi_aset: asset.lokasi_aset,
-            },
-            user: { 
-              username: user.username,
-            },
           });
 
           newPeminjaman.save()
@@ -63,8 +51,18 @@ module.exports.createPeminjaman = (req, res) => {
                     message: "Peminjaman berhasil dibuat",
                     data: {
                       peminjaman,
-                      asset: newPeminjaman.asset,  
-                      user: newPeminjaman.user,
+                      asset: {
+                        nama_alat: asset.nama_alat,
+                        tag_number: asset.tag_number,
+                        merek: asset.merek,
+                        tipe: asset.tipe,
+                        nomor_seri: asset.nomor_seri,
+                        penanggung_jawab: asset.penanggung_jawab,
+                        lokasi_aset: asset.lokasi_aset,
+                      },
+                      user: {
+                        username: user.username,
+                      },
                     },
                   });
                 })
@@ -106,10 +104,9 @@ module.exports.createPeminjaman = (req, res) => {
 };
 
 
-
 module.exports.getAllPeminjaman = async (req, res) => {
   try {
-    const peminjaman = await PeminjamanModel.find();
+    const peminjaman = await PeminjamanModel.find().populate('id_aset');
     res.status(200).json({ message: 'Daftar peminjaman berhasil diambil', peminjaman });
   } catch (error) {
     res.status(500).json({ error: 'Gagal mengambil daftar peminjaman: ' + error.message });

@@ -32,34 +32,6 @@ const PeminjamanSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    nama_alat: {
-        type: String,
-        required: true
-    },
-    tag_number: {
-        type: String,
-        required: true
-    },
-    merek: {
-        type: String,
-        required: true
-    },
-    tipe: {
-        type: String,
-        required: true
-    },
-    lokasi_aset: {
-        type: String,
-        required: true
-    },
-    nomor_seri: {
-        type: String,
-        required: true
-    },
-    penanggung_jawab: {
-        type: String,
-        required: true
-    },
 }, {
     versionKey: false,
 });
