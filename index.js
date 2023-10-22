@@ -5,6 +5,7 @@ const userRouter = require("./routes/users.route");
 const asetsRouter = require("./routes/asets.route");
 const adminRouter = require("./routes/admin.route");
 const pinjamRouter = require("./routes/peminjaman.route");
+const pengembalianRouter = require("./routes/pengembalian.route")
 // const { verifyToken } = require("./middleware/verifyToken");
 
 require("dotenv").config();
@@ -23,6 +24,7 @@ app.use('/api/v1/auth', userRouter);
 app.use('/api/v1/data', asetsRouter);
 app.use('/api/v1/admin', adminRouter);
 app.use('/api/v1/aset', pinjamRouter);
+app.use('/api/v1/aset', pengembalianRouter);
 
 
 const port = process.env.PORT || 8000;

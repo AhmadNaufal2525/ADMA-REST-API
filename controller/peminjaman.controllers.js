@@ -1,6 +1,7 @@
 const PeminjamanModel = require('../models/peminjaman.model');
 const AsetModel = require('../models/aset.model');
 const UserModel = require('../models/users.model');
+const AdminModel = require('../models/admin.model');
 
 module.exports.createPeminjaman = (req, res) => {
   const { lokasi, kondisi_aset, tanggal_peminjaman, tujuan_peminjaman, tagNumber, username } = req.body;
@@ -44,7 +45,7 @@ module.exports.createPeminjaman = (req, res) => {
 
           newPeminjaman.save()
             .then((peminjaman) => {
-              asset.is_borrowed = true;
+              asset.is_borrowed = false;
               asset.save()
                 .then(() => {
                   res.status(201).json({
@@ -151,47 +152,71 @@ module.exports.acceptPeminjaman = (req, res) => {
       }
 
       peminjaman.status = "Accepted";
-
-      peminjaman.save()
-        .then(() => {
-          AsetModel.findById(peminjaman.id_aset)
-            .then((asset) => {
-              asset.is_borrowed = true;
-              asset.save()
-                .then(() => {
-                  res.status(200).json({
-                    message: "Peminjaman accepted successfully",
-                    data: {
-                      peminjaman,
-                      asset: {
-                        tag_number: asset.tag_number,
-                      },
-                    },
-                  });
+      const adminId = req.user.id;
+      AdminModel.findById(adminId)
+      .then((admin) => {
+        peminjaman.accepted_by = admin;
+          peminjaman.save()
+            .then(() => {
+              AsetModel.findById(peminjaman.id_aset)
+                .then((asset) => {
+                  asset.is_borrowed = true;
+                  asset.save()
+                    .then(() => {
+                      res.status(200).json({
+                        message: "Peminjaman accepted successfully",
+                        data: {
+                          peminjaman,
+                          asset: {
+                            nama_alat: asset.nama_alat,
+                            tag_number: asset.tag_number,
+                            merek: asset.merek,
+                            tipe: asset.tipe,
+                            nomor_seri: asset.nomor_seri,
+                            penanggung_jawab: asset.penanggung_jawab,
+                            lokasi_aset: asset.lokasi_aset,
+                          },
+                          user: {
+                            username: user.username,
+                          },
+                          admin: {
+                            username: admin.username,
+                          }
+                        },
+                      });
+                    })
+                    .catch((assetErr) => {
+                      res.status(500).json({
+                        error: {
+                          message: "Error updating asset status",
+                          details: assetErr.message,
+                        },
+                      });
+                    });
                 })
                 .catch((assetErr) => {
                   res.status(500).json({
                     error: {
-                      message: "Error updating asset status",
+                      message: "Error finding asset",
                       details: assetErr.message,
                     },
                   });
                 });
             })
-            .catch((assetErr) => {
+            .catch((peminjamanErr) => {
               res.status(500).json({
                 error: {
-                  message: "Error finding asset",
-                  details: assetErr.message,
+                  message: "Error accepting peminjaman",
+                  details: peminjamanErr.message,
                 },
               });
             });
         })
-        .catch((peminjamanErr) => {
+        .catch((adminErr) => {
           res.status(500).json({
             error: {
-              message: "Error accepting peminjaman",
-              details: peminjamanErr.message,
+              message: "Error finding admin",
+              details: adminErr.message,
             },
           });
         });
@@ -205,6 +230,7 @@ module.exports.acceptPeminjaman = (req, res) => {
       });
     });
 };
+
 
 module.exports.rejectPeminjaman = (req, res) => {
   const peminjamanId = req.params.id;
