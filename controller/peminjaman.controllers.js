@@ -115,13 +115,14 @@ module.exports.getAllPeminjaman = async (req, res) => {
 };
 
 module.exports.getPeminjamanById = async (req, res) => {
+  const peminjamanId = req.params.id; 
   try {
-    const peminjamanId = req.params.id;
-    const peminjaman = await PeminjamanModel.find(peminjamanId)
-      .populate('id_aset').populate('id_user', 'username'); 
+    const peminjaman = await PeminjamanModel.findById(peminjamanId)
+      .populate('id_aset')
+      .populate('id_user', 'username');
 
     if (!peminjaman) {
-      return res.status(404).json({ error: 'Peminjaman tidak ditemukan' });
+      return res.status(404).json({ message: 'Peminjaman not found' });
     }
 
     res.status(200).json({ message: 'Peminjaman berhasil diambil', peminjaman });
