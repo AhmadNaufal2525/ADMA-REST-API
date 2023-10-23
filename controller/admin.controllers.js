@@ -126,3 +126,27 @@ module.exports.logout = (req, res) => {
 
   res.status(200).json({ message: "Logout successful" });
 };
+
+
+module.exports.getAdminById = (req, res) => {
+  const adminId = req.params.id;
+
+  AdminModel.findById(adminId)
+    .then((admin) => {
+      if (!admin) {
+        return res.status(404).json({ message: "Admin not found" });
+      }
+
+      res.status(200).json({
+        message: "Admin found",
+        data: {
+          id: admin._id,
+          username: admin.username,
+          role: admin.role,
+        },
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({ error: { message: "Error while fetching admin", err } });
+    });
+};
