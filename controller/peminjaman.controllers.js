@@ -114,11 +114,11 @@ module.exports.getAllPeminjaman = async (req, res) => {
   }
 };
 
-module.exports.getPeminjamanByUserId = async (req, res) => {
+module.exports.getPeminjamanById = async (req, res) => {
   try {
-    const userId = req.params.id;
-    const peminjaman = await PeminjamanModel.find({ id_user: userId })
-      .populate('id_aset'); 
+    const peminjamanId = req.params.id;
+    const peminjaman = await PeminjamanModel.find({ id: peminjamanId })
+      .populate('id_aset').populate('id_user', 'username'); 
 
     if (!peminjaman) {
       return res.status(404).json({ error: 'Peminjaman tidak ditemukan' });
@@ -151,7 +151,7 @@ module.exports.acceptPeminjaman = (req, res) => {
         });
       }
 
-      peminjaman.status = "Accepted";
+      peminjaman.status = "Approved";
       const adminId = req.user.id;
       AdminModel.findById(adminId)
       .then((admin) => {
@@ -267,8 +267,20 @@ module.exports.rejectPeminjaman = (req, res) => {
                     data: {
                       peminjaman,
                       asset: {
+                        nama_alat: asset.nama_alat,
                         tag_number: asset.tag_number,
+                        merek: asset.merek,
+                        tipe: asset.tipe,
+                        nomor_seri: asset.nomor_seri,
+                        penanggung_jawab: asset.penanggung_jawab,
+                        lokasi_aset: asset.lokasi_aset,
                       },
+                      user: {
+                        username: user.username,
+                      },
+                      admin: {
+                        username: admin.username,
+                      }
                     },
                   });
                 })
