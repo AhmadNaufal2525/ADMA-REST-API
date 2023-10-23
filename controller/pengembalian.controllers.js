@@ -102,7 +102,7 @@ module.exports.createPengembalian = (req, res) => {
 
 module.exports.getAllPengembalian = async (req, res) => {
    try {
-     const pengembalian = await PengembalianModelModel.find().populate('id_aset').populate('id_user', 'username');
+     const pengembalian = await PengembalianModel.find().populate('id_aset').populate('id_user', 'username');
      res.status(200).json({ message: 'Daftar pengembalian berhasil diambil', pengembalian });
    } catch (error) {
      res.status(500).json({ error: 'Gagal mengambil daftar pengembalian: ' + error.message });
