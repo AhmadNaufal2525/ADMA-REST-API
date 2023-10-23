@@ -117,7 +117,7 @@ module.exports.getAllPeminjaman = async (req, res) => {
 module.exports.getPeminjamanById = async (req, res) => {
   try {
     const peminjamanId = req.params.id;
-    const peminjaman = await PeminjamanModel.find({ id: peminjamanId })
+    const peminjaman = await PeminjamanModel.find({ id_pinjam: peminjamanId })
       .populate('id_aset').populate('id_user', 'username'); 
 
     if (!peminjaman) {
