@@ -6,6 +6,6 @@ router.get("/", protectedRoute);
 router.post("/signIn", signIn);
 router.post("/add", addAdmin);
 router.post("/logout", logout);
-router.get("/admin/:id", getAdminById)
+router.get("/:id", getAdminById)
 
 module.exports = router;
