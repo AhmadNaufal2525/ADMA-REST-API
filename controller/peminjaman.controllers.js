@@ -1,19 +1,26 @@
-const PeminjamanModel = require('../models/peminjaman.model');
-const AsetModel = require('../models/aset.model');
-const UserModel = require('../models/users.model');
-const AdminModel = require('../models/admin.model');
+const PeminjamanModel = require("../models/peminjaman.model");
+const AsetModel = require("../models/aset.model");
+const UserModel = require("../models/users.model");
+const AdminModel = require("../models/admin.model");
 
 module.exports.createPeminjaman = (req, res) => {
-  const { lokasi, kondisi_aset, tanggal_peminjaman, tujuan_peminjaman, tagNumber, username } = req.body;
-  AsetModel.findOne({ tag_number: tagNumber }) 
-  .then((asset) => {
-    if (!asset) {
-      return res.status(404).json({
-        error: {
-          message: "Asset not found",
-        },
-      });
-    }
+  const {
+    lokasi,
+    kondisi_aset,
+    tanggal_peminjaman,
+    tujuan_peminjaman,
+    tagNumber,
+    username,
+  } = req.body;
+  AsetModel.findOne({ tag_number: tagNumber })
+    .then((asset) => {
+      if (!asset) {
+        return res.status(404).json({
+          error: {
+            message: "Asset not found",
+          },
+        });
+      }
 
       if (asset.is_borrowed) {
         return res.status(400).json({
@@ -43,10 +50,12 @@ module.exports.createPeminjaman = (req, res) => {
             status: "Pending",
           });
 
-          newPeminjaman.save()
+          newPeminjaman
+            .save()
             .then((peminjaman) => {
               asset.is_borrowed = false;
-              asset.save()
+              asset
+                .save()
                 .then(() => {
                   res.status(201).json({
                     message: "Peminjaman berhasil dibuat",
@@ -104,51 +113,65 @@ module.exports.createPeminjaman = (req, res) => {
     });
 };
 
-
 module.exports.getAllPeminjaman = async (req, res) => {
   try {
-    const peminjaman = await PeminjamanModel.find().populate('id_aset').populate('id_user', 'username');
-    res.status(200).json({ message: 'Daftar peminjaman berhasil diambil', peminjaman });
+    const peminjaman = await PeminjamanModel.find()
+      .populate("id_aset")
+      .populate("id_user", "username");
+    res
+      .status(200)
+      .json({ message: "Daftar peminjaman berhasil diambil", peminjaman });
   } catch (error) {
-    res.status(500).json({ error: 'Gagal mengambil daftar peminjaman: ' + error.message });
+    res
+      .status(500)
+      .json({ error: "Gagal mengambil daftar peminjaman: " + error.message });
   }
 };
 
 module.exports.getPeminjamanById = async (req, res) => {
-  const peminjamanId = req.params.id; 
+  const peminjamanId = req.params.id;
   try {
     const peminjaman = await PeminjamanModel.findById(peminjamanId)
-      .populate('id_aset')
-      .populate('id_user', 'username');
+      .populate("id_aset")
+      .populate("id_user", "username");
 
     if (!peminjaman) {
-      return res.status(404).json({ message: 'Peminjaman not found' });
+      return res.status(404).json({ message: "Peminjaman not found" });
     }
 
-    res.status(200).json({ message: 'Peminjaman berhasil diambil', peminjaman });
+    res
+      .status(200)
+      .json({ message: "Peminjaman berhasil diambil", peminjaman });
   } catch (error) {
-    res.status(500).json({ error: 'Gagal mengambil peminjaman: ' + error.message });
+    res
+      .status(500)
+      .json({ error: "Gagal mengambil peminjaman: " + error.message });
   }
 };
 
 module.exports.getPeminjamanByUserId = async (req, res) => {
   try {
     const userId = req.params.id;
-    const peminjaman = await PeminjamanModel.find({ id_user: userId })
-      .populate('id_aset'); 
+    const peminjaman = await PeminjamanModel.find({ id_user: userId }).populate(
+      "id_aset"
+    );
 
     if (!peminjaman) {
-      return res.status(404).json({ error: 'Peminjaman tidak ditemukan' });
+      return res.status(404).json({ error: "Peminjaman tidak ditemukan" });
     }
 
-    res.status(200).json({ message: 'Peminjaman berhasil diambil', peminjaman });
+    res
+      .status(200)
+      .json({ message: "Peminjaman berhasil diambil", peminjaman });
   } catch (error) {
-    res.status(500).json({ error: 'Gagal mengambil peminjaman: ' + error.message });
+    res
+      .status(500)
+      .json({ error: "Gagal mengambil peminjaman: " + error.message });
   }
 };
 
 module.exports.approvedPeminjaman = (req, res) => {
-  const { peminjamanId, adminId } = req.body; 
+  const { peminjamanId, adminId } = req.body;
 
   PeminjamanModel.findById(peminjamanId)
     .then((peminjaman) => {
@@ -168,10 +191,10 @@ module.exports.approvedPeminjaman = (req, res) => {
         });
       }
 
+      peminjaman.admin_id = adminId;
 
-      peminjaman.admin_id = adminId; 
-
-      peminjaman.save()
+      peminjaman
+        .save()
         .then(() => {
           AdminModel.findById(adminId)
             .then((admin) => {
@@ -194,7 +217,8 @@ module.exports.approvedPeminjaman = (req, res) => {
                   }
                   peminjaman.status = "Approved";
                   asset.is_borrowed = true;
-                  asset.save()
+                  asset
+                    .save()
                     .then(() => {
                       UserModel.findById(peminjaman.id_user)
                         .then((user) => {
@@ -211,9 +235,15 @@ module.exports.approvedPeminjaman = (req, res) => {
                             data: {
                               peminjaman,
                               asset: {
+                                nama_alat: asset.nama_alat,
+                                tag_number: asset.tag_number,
+                                merek: asset.merek,
+                                tipe: asset.tipe,
+                                nomor_seri: asset.nomor_seri,
+                                penanggung_jawab: asset.penanggung_jawab,
+                                lokasi_aset: asset.lokasi_aset,
                               },
-                              user: { 
-                                user_id: user._id,
+                              user: {
                                 username: user.username,
                               },
                               admin: {
@@ -277,5 +307,3 @@ module.exports.approvedPeminjaman = (req, res) => {
       });
     });
 };
-
-
