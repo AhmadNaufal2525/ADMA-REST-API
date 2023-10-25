@@ -148,7 +148,7 @@ module.exports.getPeminjamanByUserId = async (req, res) => {
 };
 
 module.exports.approvedPeminjaman = (req, res) => {
-  const { peminjamanId } = req.body; 
+  const { peminjamanId, adminId } = req.body; 
 
   PeminjamanModel.findById(peminjamanId)
     .then((peminjaman) => {
@@ -169,7 +169,7 @@ module.exports.approvedPeminjaman = (req, res) => {
       }
 
       peminjaman.status = "Approved";
-      peminjaman.admin_id = req.adminId; 
+      peminjaman.admin_id = adminId; 
 
       peminjaman.save()
         .then(() => {
@@ -177,6 +177,7 @@ module.exports.approvedPeminjaman = (req, res) => {
             message: "Peminjaman berhasil disetujui",
             data: {
               peminjaman,
+              admin_id: adminId
             },
           });
         })
