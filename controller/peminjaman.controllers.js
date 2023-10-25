@@ -173,13 +173,77 @@ module.exports.approvedPeminjaman = (req, res) => {
 
       peminjaman.save()
         .then(() => {
-          res.status(200).json({
-            message: "Peminjaman berhasil disetujui",
-            data: {
-              peminjaman,
-              admin_id: adminId
-            },
-          });
+          AdminModel.findById(adminId)
+            .then((admin) => {
+              if (!admin) {
+                return res.status(404).json({
+                  error: {
+                    message: "Admin not found",
+                  },
+                });
+              }
+              AsetModel.findById(peminjaman.id_aset)
+                .then((asset) => {
+                  if (!asset) {
+                    return res.status(404).json({
+                      error: {
+                        message: "Asset not found",
+                      },
+                    });
+                  }
+
+                  asset.is_borrowed = true;
+                  asset.save()
+                    .then(() => {
+                      res.status(200).json({
+                        message: "Peminjaman berhasil disetujui",
+                        data: {
+                          peminjaman,
+                          asset: {
+                            nama_alat: asset.nama_alat,
+                            tag_number: asset.tag_number,
+                            merek: asset.merek,
+                            tipe: asset.tipe,
+                            nomor_seri: asset.nomor_seri,
+                            penanggung_jawab: asset.penanggung_jawab,
+                            lokasi_aset: asset.lokasi_aset,
+                          },
+                          user: {
+                            username: user.username,
+                          },
+                          admin: { 
+                            admin_id: admin._id,
+                            username: admin.username,
+                          },
+                        },
+                      });
+                    })
+                    .catch((assetErr) => {
+                      res.status(500).json({
+                        error: {
+                          message: "Error updating asset status",
+                          details: assetErr.message,
+                        },
+                      });
+                    });
+                })
+                .catch((assetErr) => {
+                  res.status(500).json({
+                    error: {
+                      message: "Error finding asset",
+                      details: assetErr.message,
+                    },
+                  });
+                });
+            })
+            .catch((adminErr) => {
+              res.status(500).json({
+                error: {
+                  message: "Error finding admin",
+                  details: adminErr.message,
+                },
+              });
+            });
         })
         .catch((peminjamanErr) => {
           res.status(500).json({
@@ -199,3 +263,4 @@ module.exports.approvedPeminjaman = (req, res) => {
       });
     });
 };
+
