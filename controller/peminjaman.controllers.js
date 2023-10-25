@@ -192,7 +192,7 @@ module.exports.approvedPeminjaman = (req, res) => {
       }
 
       peminjaman.admin_id = adminId;
-
+      peminjaman.status = "Approved";
       peminjaman
         .save()
         .then(() => {
@@ -215,7 +215,6 @@ module.exports.approvedPeminjaman = (req, res) => {
                       },
                     });
                   }
-                  peminjaman.status = "Approved";
                   asset.is_borrowed = true;
                   asset
                     .save()
