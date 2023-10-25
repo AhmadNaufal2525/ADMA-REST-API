@@ -192,10 +192,10 @@ module.exports.approvedPeminjaman = (req, res) => {
       }
 
       peminjaman.admin_id = adminId;
+      peminjaman.status = "Approved";
       peminjaman
         .save()
         .then(() => {
-          peminjaman.status = "Approved";
           AdminModel.findById(adminId)
             .then((admin) => {
               if (!admin) {
