@@ -14,7 +14,7 @@ const UserModel = require('../models/users.model');
           });
         }
 
-        AsetModel.findOne({ username: username  })
+        AsetModel.findOne({ username: username })
           .then((asset) => {
             if (!asset) {
               return res.status(404).json({

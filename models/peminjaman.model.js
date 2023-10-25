@@ -7,6 +7,16 @@ const PeminjamanSchema = new mongoose.Schema({
         ref: "users",
         required: true
     },
+    id_admin: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "admin",
+        required: true
+    },
+    status: {
+        type: String,
+        enum: ['Pending', 'Approved', 'Rejected'],
+        default: 'Pending',
+    },
     id_aset: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "aset",
@@ -25,10 +35,6 @@ const PeminjamanSchema = new mongoose.Schema({
         required: true
     },
     tujuan_peminjaman: {
-        type: String,
-        required: true
-    },
-    status: {
         type: String,
         required: true
     },

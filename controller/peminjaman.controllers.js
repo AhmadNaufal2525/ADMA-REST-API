@@ -147,11 +147,9 @@ module.exports.getPeminjamanByUserId = async (req, res) => {
   }
 };
 
+module.exports.approvedPeminjaman = (req, res) => {
+  const { peminjamanId } = req.body; 
 
-
-module.exports.acceptPeminjaman = (req, res) => {
-  const peminjamanId = req.params.id;
-  
   PeminjamanModel.findById(peminjamanId)
     .then((peminjaman) => {
       if (!peminjaman) {
@@ -162,169 +160,30 @@ module.exports.acceptPeminjaman = (req, res) => {
         });
       }
 
-      if (peminjaman.status !== "Pending") {
+      if (peminjaman.status === "Approved") {
         return res.status(400).json({
           error: {
-            message: "Peminjaman is not pending",
+            message: "Peminjaman is already approved",
           },
         });
       }
 
       peminjaman.status = "Approved";
-      const adminId = req.user.id;
-      AdminModel.findById(adminId)
-      .then((admin) => {
-        peminjaman.accepted_by = admin;
-          peminjaman.save()
-            .then(() => {
-              AsetModel.findById(peminjaman.id_aset)
-                .then((asset) => {
-                  asset.is_borrowed = true;
-                  asset.save()
-                    .then(() => {
-                      res.status(200).json({
-                        message: "Peminjaman accepted successfully",
-                        data: {
-                          peminjaman,
-                          asset: {
-                            nama_alat: asset.nama_alat,
-                            tag_number: asset.tag_number,
-                            merek: asset.merek,
-                            tipe: asset.tipe,
-                            nomor_seri: asset.nomor_seri,
-                            penanggung_jawab: asset.penanggung_jawab,
-                            lokasi_aset: asset.lokasi_aset,
-                          },
-                          user: {
-                            username: user.username,
-                          },
-                          admin: {
-                            username: admin.username,
-                          }
-                        },
-                      });
-                    })
-                    .catch((assetErr) => {
-                      res.status(500).json({
-                        error: {
-                          message: "Error updating asset status",
-                          details: assetErr.message,
-                        },
-                      });
-                    });
-                })
-                .catch((assetErr) => {
-                  res.status(500).json({
-                    error: {
-                      message: "Error finding asset",
-                      details: assetErr.message,
-                    },
-                  });
-                });
-            })
-            .catch((peminjamanErr) => {
-              res.status(500).json({
-                error: {
-                  message: "Error accepting peminjaman",
-                  details: peminjamanErr.message,
-                },
-              });
-            });
-        })
-        .catch((adminErr) => {
-          res.status(500).json({
-            error: {
-              message: "Error finding admin",
-              details: adminErr.message,
-            },
-          });
-        });
-    })
-    .catch((peminjamanErr) => {
-      res.status(500).json({
-        error: {
-          message: "Error finding peminjaman",
-          details: peminjamanErr.message,
-        },
-      });
-    });
-};
-
-
-module.exports.rejectPeminjaman = (req, res) => {
-  const peminjamanId = req.params.id;
-  
-  PeminjamanModel.findById(peminjamanId)
-    .then((peminjaman) => {
-      if (!peminjaman) {
-        return res.status(404).json({
-          error: {
-            message: "Peminjaman not found",
-          },
-        });
-      }
-
-      if (peminjaman.status !== "Pending") {
-        return res.status(400).json({
-          error: {
-            message: "Peminjaman is not pending",
-          },
-        });
-      }
-
-      peminjaman.status = "Rejected";
+      peminjaman.admin_id = req.adminId; 
 
       peminjaman.save()
         .then(() => {
-          AsetModel.findById(peminjaman.id_aset)
-            .then((asset) => {
-              asset.is_borrowed = false;
-              asset.save()
-                .then(() => {
-                  res.status(200).json({
-                    message: "Peminjaman rejected successfully",
-                    data: {
-                      peminjaman,
-                      asset: {
-                        nama_alat: asset.nama_alat,
-                        tag_number: asset.tag_number,
-                        merek: asset.merek,
-                        tipe: asset.tipe,
-                        nomor_seri: asset.nomor_seri,
-                        penanggung_jawab: asset.penanggung_jawab,
-                        lokasi_aset: asset.lokasi_aset,
-                      },
-                      user: {
-                        username: user.username,
-                      },
-                      admin: {
-                        username: admin.username,
-                      }
-                    },
-                  });
-                })
-                .catch((assetErr) => {
-                  res.status(500).json({
-                    error: {
-                      message: "Error updating asset status",
-                      details: assetErr.message,
-                    },
-                  });
-                });
-            })
-            .catch((assetErr) => {
-              res.status(500).json({
-                error: {
-                  message: "Error finding asset",
-                  details: assetErr.message,
-                },
-              });
-            });
+          res.status(200).json({
+            message: "Peminjaman berhasil disetujui",
+            data: {
+              peminjaman,
+            },
+          });
         })
         .catch((peminjamanErr) => {
           res.status(500).json({
             error: {
-              message: "Error rejecting peminjaman",
+              message: "Error updating peminjaman status",
               details: peminjamanErr.message,
             },
           });
@@ -339,4 +198,3 @@ module.exports.rejectPeminjaman = (req, res) => {
       });
     });
 };
-
