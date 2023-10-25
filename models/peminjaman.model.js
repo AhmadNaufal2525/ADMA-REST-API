@@ -10,7 +10,6 @@ const PeminjamanSchema = new mongoose.Schema({
     id_admin: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "admin",
-        required: true
     },
     status: {
         type: String,
