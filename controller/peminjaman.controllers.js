@@ -168,7 +168,7 @@ module.exports.approvedPeminjaman = (req, res) => {
         });
       }
 
-      peminjaman.status = "Approved";
+
       peminjaman.admin_id = adminId; 
 
       peminjaman.save()
@@ -182,6 +182,7 @@ module.exports.approvedPeminjaman = (req, res) => {
                   },
                 });
               }
+
               AsetModel.findById(peminjaman.id_aset)
                 .then((asset) => {
                   if (!asset) {
@@ -191,32 +192,45 @@ module.exports.approvedPeminjaman = (req, res) => {
                       },
                     });
                   }
-
+                  peminjaman.status = "Approved";
                   asset.is_borrowed = true;
                   asset.save()
                     .then(() => {
-                      res.status(200).json({
-                        message: "Peminjaman berhasil disetujui",
-                        data: {
-                          peminjaman,
-                          asset: {
-                            nama_alat: asset.nama_alat,
-                            tag_number: asset.tag_number,
-                            merek: asset.merek,
-                            tipe: asset.tipe,
-                            nomor_seri: asset.nomor_seri,
-                            penanggung_jawab: asset.penanggung_jawab,
-                            lokasi_aset: asset.lokasi_aset,
-                          },
-                          user: {
-                            username: user.username,
-                          },
-                          admin: { 
-                            admin_id: admin._id,
-                            username: admin.username,
-                          },
-                        },
-                      });
+                      UserModel.findById(peminjaman.id_user)
+                        .then((user) => {
+                          if (!user) {
+                            return res.status(404).json({
+                              error: {
+                                message: "User not found",
+                              },
+                            });
+                          }
+
+                          res.status(200).json({
+                            message: "Peminjaman berhasil disetujui",
+                            data: {
+                              peminjaman,
+                              asset: {
+                              },
+                              user: { 
+                                user_id: user._id,
+                                username: user.username,
+                              },
+                              admin: {
+                                admin_id: admin._id,
+                                username: admin.username,
+                              },
+                            },
+                          });
+                        })
+                        .catch((userErr) => {
+                          res.status(500).json({
+                            error: {
+                              message: "Error finding user",
+                              details: userErr.message,
+                            },
+                          });
+                        });
                     })
                     .catch((assetErr) => {
                       res.status(500).json({
@@ -263,4 +277,5 @@ module.exports.approvedPeminjaman = (req, res) => {
       });
     });
 };
+
 
