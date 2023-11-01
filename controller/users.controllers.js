@@ -22,8 +22,8 @@ module.exports.signIn = (req, res) => {
 
             res.status(200).json({
               message: "Login Successful",
+              status: 200,
               data: {
-                status: 200,
                 id: user._id,
                 email: user.email,
                 username: user.username,
@@ -33,28 +33,21 @@ module.exports.signIn = (req, res) => {
           } else {
             res.status(401).json({
               message: "Incorrect Password",
-              data: {
-                status: 401,
-              }
+              status: 401,
             });
           }
         });
       } else {
         res.status(404).json({
           message: "Email not registered",
-          data: {
-            status: 404, 
-          }
+          status: 404, 
         });
       }
     })
     .catch((err) => {
       res.status(500).json({
         message: "Error while signing in",
-        data: {
-          status: 500,
-          error: err,
-        }
+        status: 500,
       });
     });
 };
@@ -71,8 +64,8 @@ module.exports.signUp = (req, res) => {
       if (existingUser) {
         return res.status(400).json({
           message: "Email already exists",
+          status: 400,
           data: {
-            status: 400,
             error: { message: "Email already exists" },
           },
         });
@@ -81,8 +74,8 @@ module.exports.signUp = (req, res) => {
           if (err) {
             return res.status(500).json({
               message: "Error hashing password",
+              status: 500,
               data: {
-                status: 500,
                 error: err,
               },
             });
@@ -105,8 +98,8 @@ module.exports.signUp = (req, res) => {
 
               res.status(201).json({
                 message: "Register successfully",
+                status: 201,
                 data: {
-                  status: 201,
                   id: user._id,
                   email: user.email,
                   username: user.username,
@@ -118,8 +111,8 @@ module.exports.signUp = (req, res) => {
             .catch((err) => {
               res.status(500).json({
                 message: "Error create account",
+                status: 500,
                 data: {
-                  status: 500,
                   error: err,
                 },
               });
@@ -130,8 +123,8 @@ module.exports.signUp = (req, res) => {
     .catch((err) => {
       return res.status(500).json({
         message: "Error checking email existence",
+        status: 500,
         data: {
-          status: 500,
           error: err,
         },
       });
@@ -154,8 +147,8 @@ module.exports.getAllUsers = (req, res) => {
     .then((users) => {
       res.status(200).json({
         message: "Successful Load List Users",
+        status: 500,
         data: {
-          status: 200,
           users: users.map((user) => ({
             id: user._id,
             email: user.email,
@@ -168,8 +161,8 @@ module.exports.getAllUsers = (req, res) => {
     .catch((err) => {
       res.status(500).json({
         message: "Error fetching users",
+        status: 500,
         data: {
-          status: 500,
           error: err,
         },
       });
@@ -184,8 +177,8 @@ module.exports.getUserByUsername = (req, res) => {
       if (!user) {
         return res.status(404).json({
           message: "User not found",
+          status: 404,
           data: {
-            status: 404,
             error: { message: "User not found" },
           },
         });
@@ -193,8 +186,8 @@ module.exports.getUserByUsername = (req, res) => {
 
       res.status(200).json({
         message: "Successful Load User By Username",
+        status: 200,
         data: {
-          status: 200,
           id: user._id,
           email: user.email,
           username: user.username,
@@ -206,8 +199,8 @@ module.exports.getUserByUsername = (req, res) => {
     .catch((err) => {
       res.status(500).json({
         message: "Error fetching user",
+        status: 500,
         data: {
-          status: 500,
           error: err,
         },
       });
