@@ -1,31 +1,30 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
-const userRouter = require("./routes/users.route");
-const asetsRouter = require("./routes/asets.route");
-const adminRouter = require("./routes/admin.route");
-const pinjamRouter = require("./routes/peminjaman.route");
-const pengembalianRouter = require("./routes/pengembalian.route")
-// const { verifyToken } = require("./middleware/verifyToken");
+const authRoutes = require('./routes/auth.route');
+const userRoutes = require('./routes/users.route');
+const asetRouter = require("./routes/aset.route");
+const peminjamanRouter = require("./routes/peminjaman.route");
+const serviceAccount = require('./serviceAccountKey.json');
+const admin = require('firebase-admin');
 
 require("dotenv").config();
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
-// app.use(verifyToken)
-app.use('/api/v1/auth', userRouter);
-app.use('/api/v1/data', asetsRouter);
-app.use('/api/v1/admin', adminRouter);
-app.use('/api/v1/aset', pinjamRouter);
-app.use('/api/v1/aset', pengembalianRouter);
-
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/user', userRoutes);
+app.use('/api/v1/data', asetRouter);
+app.use('/api/v1/aset', peminjamanRouter);
 
 const port = process.env.PORT || 8000;
 

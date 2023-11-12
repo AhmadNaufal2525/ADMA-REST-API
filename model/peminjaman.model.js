@@ -1,15 +1,11 @@
 const mongoose = require('mongoose');
 
 const PeminjamanSchema = new mongoose.Schema({
-    id_pinjam: mongoose.Schema.Types.ObjectId,
+    id: mongoose.Schema.Types.ObjectId,
     id_user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "users",
+        ref: "User",
         required: true
-    },
-    id_admin: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "admin",
     },
     status: {
         type: String,
@@ -18,7 +14,7 @@ const PeminjamanSchema = new mongoose.Schema({
     },
     id_aset: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "aset",
+        ref: "Aset",
         required: true
     },
     lokasi: {
@@ -41,5 +37,5 @@ const PeminjamanSchema = new mongoose.Schema({
     versionKey: false,
 });
 
-const PeminjamanModel = mongoose.model('peminjaman', PeminjamanSchema); 
+const PeminjamanModel = mongoose.model('Peminjaman', PeminjamanSchema); 
 module.exports = PeminjamanModel;

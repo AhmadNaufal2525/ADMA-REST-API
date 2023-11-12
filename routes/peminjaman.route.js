@@ -1,10 +1,12 @@
 const express = require('express');
-const {createPeminjaman, getAllPeminjaman, getPeminjamanById, getPeminjamanByUserId, approvedPeminjaman} = require('../controller/peminjaman.controllers')
+const { getAllPeminjaman, createPeminjaman, getPeminjamanByUserId, acceptPeminjaman, rejectPeminjaman } = require('../controller/peminjaman.controller');
+
 const router = express.Router();
 
 router.post('/peminjaman', createPeminjaman);
-router.get('/peminjaman/:id', getPeminjamanById);
+router.get('/listPeminjam', getAllPeminjaman);
 router.get('/peminjam/:id', getPeminjamanByUserId);
-router.get('/listpinjam', getAllPeminjaman);
-router.post('/peminjaman/approve', approvedPeminjaman);
+router.put('/acceptPeminjaman/:id', acceptPeminjaman);
+router.put('/rejectPeminjaman/:id', rejectPeminjaman);
+
 module.exports = router;

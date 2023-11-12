@@ -37,5 +37,5 @@ const AsetSchema = new mongoose.Schema({
     versionKey: false,
 });
 
-const AsetModel = mongoose.model('aset', AsetSchema); 
+const AsetModel = mongoose.model('Aset', AsetSchema); 
 module.exports = AsetModel;

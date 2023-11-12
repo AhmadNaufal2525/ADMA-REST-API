@@ -4,12 +4,12 @@ const PengembalianSchema = new mongoose.Schema({
     id: mongoose.Schema.Types.ObjectId,
     id_user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "users",
+        ref: "Users",
         required: true
     },
     id_aset: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "aset",
+        ref: "Aset",
         required: true
     },
     lokasi: {
@@ -36,5 +36,5 @@ const PengembalianSchema = new mongoose.Schema({
     versionKey: false,
 });
 
-const PengembalianModel = mongoose.model('pengembalian', PengembalianSchema); 
+const PengembalianModel = mongoose.model('Pengembalian', PengembalianSchema); 
 module.exports = PengembalianModel;
