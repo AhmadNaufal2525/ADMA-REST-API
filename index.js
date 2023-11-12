@@ -4,17 +4,11 @@ const authRoutes = require('./routes/auth.route');
 const userRoutes = require('./routes/users.route');
 const asetRouter = require("./routes/aset.route");
 const peminjamanRouter = require("./routes/peminjaman.route");
-const serviceAccount = require('./serviceAccountKey.json');
-const admin = require('firebase-admin');
 
 require("dotenv").config();
 
 const app = express();
 app.use(express.json());
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
