@@ -5,6 +5,10 @@ const register = async (req, res, next) => {
   const { username, email, password, role } = req.body;
 
   try {
+    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email or username is already in use' });
+    }
     const user = new User({ username, email, password, role });
     await user.save();
     const responseData = {
@@ -28,6 +32,9 @@ const login = async (req, res, next) => {
 
   try {
     const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: 'User not registered' });
+    }
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -54,6 +61,11 @@ const login = async (req, res, next) => {
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({}, { password: 0 });
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({ message: 'No users found' });
+    }
+
     res.json(users);
   } catch (error) {
     console.error('Error fetching users:', error);
