@@ -38,7 +38,7 @@ const login = async (req, res, next) => {
       return res.status(401).json({ message: 'User not registered' });
     }
 
-    const passwordMatch = await user.comparePassword(password);
+    const passwordMatch = bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       return res.status(401).json({ message: 'Incorrect password' });
     }
@@ -61,7 +61,7 @@ const login = async (req, res, next) => {
 
     res.json(responseData);
   } catch (error) {
-    console.error('Error during login:', error);
+    next(error);
     res.status(500).json({ message: 'Login failed' });
   }
 };
