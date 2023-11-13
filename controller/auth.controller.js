@@ -74,21 +74,13 @@ const getAllUsers = async (req, res) => {
 };
 
 const logout = (req, res, next) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-
-    if (!token) {
-      return res.status(401).json({ message: 'Unauthorized: No token provided' });
+  req.session.destroy((error) => {
+    if (error) {
+      console.error('Error during logout:', error);
+      res.status(500).json({ message: 'Logout failed' });
+    } else {
+      res.json({ message: 'Logout successful' });
     }
-    res.cookie('token', 'none', {
-      httpOnly: true,
-    });
-
-    res.status(200).json({ message: 'Logout successful' });
-  } catch (error) {
-    console.error('Error during logout:', error);
-    res.status(500).json({ message: 'Logout failed' });
-  }
+  });
 };
-
 module.exports = { register, login, getAllUsers, logout };
