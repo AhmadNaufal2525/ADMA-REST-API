@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../model/users.model');
+const blacklist = [];
 
 const register = async (req, res, next) => {
   const { username, email, password, role } = req.body;
@@ -73,9 +74,22 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-const logout = (req, res) => {
-  res.clearCookie('token');
-  res.json({ message: 'Logout successful' });
+const logout = async (req, res, next) => {
+  const token = req.headers.authorization;
+
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  try {
+    blacklist.push(token);
+
+    res.json({ message: 'Logout successful' });
+  } catch (error) {
+    console.error('Error during logout:', error);
+    res.status(500).json({ message: 'Logout failed' });
+  }
 };
 
-module.exports = { register, login, getAllUsers, logout };
+
+module.exports = { register, login, getAllUsers, logout};
