@@ -21,7 +21,7 @@ const register = async (req, res, next) => {
       }
     };
 
-    res.json(responseData);
+    res.status(201).json(responseData);
   } catch (error) {
     console.error('Error during registration:', error);
     res.status(500).json({ message: 'Registration failed' });
