@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const User = require('../model/users.model');
-const revokedTokens = new Set();
 
 const register = async (req, res, next) => {
   const { username, email, password, role } = req.body;
@@ -74,15 +73,22 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-const logout = (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1];
+const logout = (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
 
-  if (!token) {
-    return res.status(400).json({ message: "No token provided" });
+    if (!token) {
+      return res.status(401).json({ message: 'Unauthorized: No token provided' });
+    }
+    res.cookie('token', 'none', {
+      httpOnly: true,
+    });
+
+    res.status(200).json({ message: 'Logout successful' });
+  } catch (error) {
+    console.error('Error during logout:', error);
+    res.status(500).json({ message: 'Logout failed' });
   }
-  revokedTokens.add(token);
-
-  res.status(200).json({ message: "Logout successful" });
 };
 
-module.exports = { register, login, getAllUsers, logout};
+module.exports = { register, login, getAllUsers, logout };
