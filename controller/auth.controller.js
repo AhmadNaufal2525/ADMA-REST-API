@@ -39,11 +39,15 @@ const login = async (req, res, next) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
+      expiresIn: '3 hours'
+    });
+
+    res.cookie('token', token, { httpOnly: true, expiresIn: '3 hours' });
+
     const responseData = {
       message: 'Login successful',
-      token: jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
-        expiresIn: '3 hours'
-      }),
+      token,
       user: {
         username: user.username,
         email: user.email,
@@ -56,6 +60,13 @@ const login = async (req, res, next) => {
     console.error('Error during login:', error);
     res.status(500).json({ message: 'Login failed' });
   }
+};
+
+const logout = (req, res) => {
+  
+  res.clearCookie('token');
+
+  res.json({ message: 'Logout successful' });
 };
 
 const getAllUsers = async (req, res) => {
@@ -73,14 +84,5 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-const logout = (req, res, next) => {
-  req.session.destroy((error) => {
-    if (error) {
-      console.error('Error during logout:', error);
-      res.status(500).json({ message: 'Logout failed' });
-    } else {
-      res.json({ message: 'Logout successful' });
-    }
-  });
-};
+
 module.exports = { register, login, getAllUsers, logout };
