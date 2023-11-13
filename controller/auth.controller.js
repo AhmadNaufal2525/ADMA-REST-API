@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../model/users.model');
+const bcrypt = require('bcrypt');
 
 const register = async (req, res, next) => {
   const { username, email, password, role } = req.body;
@@ -21,10 +22,9 @@ const register = async (req, res, next) => {
         role: user.role
       }
     };
-
     res.status(201).json(responseData);
   } catch (error) {
-    console.error('Error during registration:', error);
+    next(error);
     res.status(500).json({ message: 'Registration failed' });
   }
 };
