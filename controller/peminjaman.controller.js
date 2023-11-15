@@ -194,4 +194,26 @@ const getPeminjamanByUserId = async (req, res) => {
   }
 };
 
-module.exports = { createPeminjaman, getAllPeminjaman, getPeminjamanByUserId, rejectPeminjaman, acceptPeminjaman };
+const getPeminjamanById = async (req, res) => {
+  const peminjamanId = req.params.id;
+  try {
+    const peminjaman = await PeminjamanModel.findById(peminjamanId)
+      .populate("id_aset")
+      .populate("id_user", "username");
+
+    if (!peminjaman) {
+      return res.status(404).json({ message: "Peminjaman not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Peminjaman berhasil diambil", peminjaman });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Gagal mengambil peminjaman: " + error.message });
+  }
+};
+
+
+module.exports = { createPeminjaman, getAllPeminjaman, getPeminjamanByUserId, rejectPeminjaman, acceptPeminjaman, getPeminjamanById };
