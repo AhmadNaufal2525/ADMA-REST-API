@@ -5,7 +5,8 @@ const router = express.Router();
 
 router.get('/profile', authenticate, (req, res) => {
   const username = req.user.username;
-  res.json({ username });
+  const role = req.user.role;
+  res.json({ username , role});
 });
 
 module.exports = router;
