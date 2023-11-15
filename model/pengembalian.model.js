@@ -4,7 +4,7 @@ const PengembalianSchema = new mongoose.Schema({
     id: mongoose.Schema.Types.ObjectId,
     id_user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Users",
+        ref: "User",
         required: true
     },
     id_aset: {
@@ -27,6 +27,9 @@ const PengembalianSchema = new mongoose.Schema({
     foto: {
         type: String,
         required: true
+    },
+    url: {
+        type: String,
     },
     status: {
         type: String,

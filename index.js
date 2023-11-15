@@ -4,6 +4,7 @@ const authRoutes = require('./routes/auth.route');
 const userRoutes = require('./routes/users.route');
 const asetRouter = require("./routes/aset.route");
 const peminjamanRouter = require("./routes/peminjaman.route");
+const pengembalianRouter = require("./routes/pengembalian.route");
 const cors = require("cors");
 
 require("dotenv").config();
@@ -26,6 +27,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/data', asetRouter);
 app.use('/api/v1/aset', peminjamanRouter);
+app.use('/api/v1/aset', pengembalianRouter);
 
 const port = process.env.PORT || 8000;
 
