@@ -33,7 +33,12 @@ const PengembalianSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        required: true
+        enum: ['Pending', 'Approved', 'Rejected'],
+        default: 'Pending',
+    },
+    jenis: {
+        type: String,
+        default: "Pengembalian"
     },
 }, {
     versionKey: false,

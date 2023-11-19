@@ -5,7 +5,7 @@ const addPengembalian = async (req, res) => {
     if (req.files === null) return res.status(400).json({ msg: "Tidak ada gambar yang diupload" });
 
     try {
-        const { id_user, id_aset, lokasi, kondisi_aset, tanggal_pengembalian, status } = req.body;
+        const { id_user, id_aset, lokasi, kondisi_aset, tanggal_pengembalian, status, jenis } = req.body;
         
         const file = req.files.file;
         const fileSize = file.data.length;
@@ -29,6 +29,7 @@ const addPengembalian = async (req, res) => {
                 foto: fileName,
                 url,
                 status,
+                jenis,
             });
 
             await pengembalian.save();

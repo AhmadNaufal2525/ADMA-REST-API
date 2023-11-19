@@ -10,6 +10,7 @@ const createPeminjaman = async (req, res) => {
       tanggal_peminjaman,
       tujuan_peminjaman,
       tagNumber,
+      jenis,
       username,
     } = req.body;
 
@@ -49,6 +50,7 @@ const createPeminjaman = async (req, res) => {
       id_aset: aset._id,
       id_user: user._id,
       status: "Pending",
+      jenis: "Peminjaman",
     });
 
     const savedPeminjaman = await newPeminjaman.save();
