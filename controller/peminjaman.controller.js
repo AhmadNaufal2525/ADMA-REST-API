@@ -10,7 +10,6 @@ const createPeminjaman = async (req, res) => {
       tanggal_peminjaman,
       tujuan_peminjaman,
       tagNumber,
-      jenis,
       username,
     } = req.body;
 

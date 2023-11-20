@@ -23,7 +23,7 @@ const createPengembalian = async (req, res) => {
       username,
     } = req.body;
 
-    const aset = await AsetModel.findOne({ _id: id_aset });
+    const aset = await AsetModel.findOne({ tag_number: tagNumber });
 
     if (!aset) {
       return res.status(404).json({
@@ -65,9 +65,6 @@ const createPengembalian = async (req, res) => {
       });
     }
 
-    // Handle the photo file upload
-   
-
     const newPengembalian = new PengembalianModel({
       lokasi,
       kondisi_aset,
@@ -82,7 +79,7 @@ const createPengembalian = async (req, res) => {
     const photoFile = req.file;
     const photoFileName = `pengembalian_${savedPengembalian._id}_${Date.now()}.jpg`;
     const photoRef = storage.ref().child(photoFileName);
-    const photoSnapshot = await photoRef.put(photoFile.buffer); // Uploading the file buffer
+    const photoSnapshot = await photoRef.put(photoFile.buffer);
 
     const photoURL = await photoSnapshot.ref.getDownloadURL();
 
