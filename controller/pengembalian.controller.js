@@ -99,7 +99,7 @@ const createPengembalian = async (req, res) => {
     aset.is_borrowed = false;
     await aset.save();
 
-    existingPeminjaman.status = "Completed";
+    existingPeminjaman.status = "-";
     await existingPeminjaman.save();
 
     res.status(201).json({
