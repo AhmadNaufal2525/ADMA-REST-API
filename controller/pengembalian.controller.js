@@ -20,7 +20,7 @@ const createPengembalian = async (req, res) => {
       kondisi_aset,
       tanggal_pengembalian,
       lokasi,
-      tag_number,
+      tagNumber,
       username,
     } = req.body;
 
