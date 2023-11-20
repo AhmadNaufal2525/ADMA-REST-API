@@ -26,7 +26,6 @@ const PengembalianSchema = new mongoose.Schema({
     },
     foto: {
         type: String,
-        required: true
     },
     status: {
         type: String,
