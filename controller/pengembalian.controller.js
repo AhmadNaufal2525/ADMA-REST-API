@@ -27,13 +27,21 @@ const createPengembalian = async (req, res) => {
 
     const aset = await AsetModel.findOne({ tag_number: tagNumber });
 
-    if (!aset.is_borrowed) {
-      return res.status(400).json({
-        error: {
-          message: "Asset is not currently borrowed",
-        },
-      });
-    }
+    // if (!aset) {
+    //   return res.status(404).json({
+    //     error: {
+    //       message: "Asset not found",
+    //     },
+    //   });
+    // }
+
+    // if (!aset.is_borrowed) {
+    //   return res.status(400).json({
+    //     error: {
+    //       message: "Asset is not currently borrowed",
+    //     },
+    //   });
+    // }
 
     const user = await UserModel.findOne({ username });
 
@@ -88,7 +96,7 @@ const createPengembalian = async (req, res) => {
 
     const savedPengembalian = await newPengembalian.save();
 
-    aset.is_borrowed = false;
+    // aset.is_borrowed = false;
     await aset.save();
 
     existingPeminjaman.status = "Completed";
