@@ -1,5 +1,6 @@
 const AsetModel = require("../model/aset.model");
 const UserModel = require('../model/users.model');
+const PeminjamanModel = require('../model/peminjaman.model');
 const PengembalianModel = require('../model/pengembalian.model');
 const firebase = require('firebase/app');
 const storage = require('firebase/storage');
@@ -19,7 +20,7 @@ const createPengembalian = async (req, res) => {
       kondisi_aset,
       tanggal_pengembalian,
       lokasi,
-      id_aset,
+      tag_number,
       username,
     } = req.body;
 
