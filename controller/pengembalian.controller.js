@@ -27,14 +27,6 @@ const createPengembalian = async (req, res) => {
 
     const aset = await AsetModel.findOne({ tag_number: tagNumber });
 
-    if (!aset) {
-      return res.status(404).json({
-        error: {
-          message: "Asset not found",
-        },
-      });
-    }
-
     if (!aset.is_borrowed) {
       return res.status(400).json({
         error: {
