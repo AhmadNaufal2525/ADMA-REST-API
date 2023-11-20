@@ -1,45 +1,35 @@
 const PengembalianModel = require('../model/pengembalian.model');
-const path = require('path');
+const firebase = require('firebase/app');
+const storage = require('firebase/storage');
+const firebaseConfig = {
+    apiKey: "AIzaSyCApOuAwpMaGSiWzVM3drvbNQP2ewtBmQ4",
+    authDomain: "sima-restapi.firebaseapp.com",
+    projectId: "sima-restapi",
+    storageBucket: "sima-restapi.appspot.com",
+    messagingSenderId: "818181470773",
+    appId: "1:818181470773:web:dbd3f20aef5d2094a2cf7c"
+};
+firebase.initializeApp(firebaseConfig);
 
-const addPengembalian = async (req, res) => {
-    if (req.files === null) return res.status(400).json({ msg: "Tidak ada gambar yang diupload" });
-
+async function createPengembalian(pengembalianData, photoFile) {
     try {
-        const { id_user, id_aset, lokasi, kondisi_aset, tanggal_pengembalian, status, jenis } = req.body;
-        
-        const file = req.files.file;
-        const fileSize = file.data.length;
-        const ext = path.extname(file.name);
-        const fileName = file.md5 + ext;
-        const url = `${req.protocol}://${req.get("host")}/images/${fileName}`;
-        const allowedType = ['.png', '.jpg', '.jpeg'];
+      const newPengembalian = new PengembalianModel(pengembalianData);
+      const savedPengembalian = await newPengembalian.save();
 
-        if (!allowedType.includes(ext.toLowerCase())) return res.status(422).json({ msg: "Invalid Image" });
-        if (fileSize > 5000000) return res.status(422).json({ msg: "Ukuran image harus kurang dari 5 MB" });
+      const photoFileName = `pengembalian_${savedPengembalian._id}_${Date.now()}.jpg`;
+      const photoRef = storage.ref().child(photoFileName);
+      
+      const photoSnapshot = await photoRef.put(photoFile);
+      const photoURL = await photoSnapshot.ref.getDownloadURL();
 
-        file.mv(`./images/aset/${fileName}`, async (err) => {
-            if (err) return res.status(500).json({ msg: err.message });
-
-            const pengembalian = new PengembalianModel({
-                id_user,
-                id_aset,
-                lokasi,
-                kondisi_aset,
-                tanggal_pengembalian,
-                foto: fileName,
-                url,
-                status,
-                jenis,
-            });
-
-            await pengembalian.save();
-
-            res.status(201).json({ msg: "Data Pengembalian Berhasil Ditambahkan!" });
-        });
+      savedPengembalian.foto = photoURL;
+      await savedPengembalian.save();
+  
+      return savedPengembalian;
     } catch (error) {
-        console.log(error.message);
-        res.status(500).json({ msg: "Internal Server Error" });
+      throw new Error(error.message);
     }
-}
+  }
+  
 
-module.exports = { addPengembalian };
+module.exports = { createPengembalian };

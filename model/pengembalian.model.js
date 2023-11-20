@@ -28,9 +28,6 @@ const PengembalianSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    url: {
-        type: String,
-    },
     status: {
         type: String,
         enum: ['Pending', 'Approved', 'Rejected'],
