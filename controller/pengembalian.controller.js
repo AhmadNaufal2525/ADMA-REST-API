@@ -1,3 +1,5 @@
+const AsetModel = require("../model/aset.model");
+const UserModel = require('../model/users.model');
 const PengembalianModel = require('../model/pengembalian.model');
 const firebase = require('firebase/app');
 const storage = require('firebase/storage');
@@ -64,14 +66,7 @@ const createPengembalian = async (req, res) => {
     }
 
     // Handle the photo file upload
-    const photoFile = req.file; // Assuming the file is sent as 'file' in the request
-
-    // Your code for photo upload to Firebase Storage here
-    const photoFileName = `pengembalian_${existingPeminjaman._id}_${Date.now()}.jpg`;
-    const photoRef = storage.ref().child(photoFileName);
-    const photoSnapshot = await photoRef.put(photoFile.buffer); // Uploading the file buffer
-
-    const photoURL = await photoSnapshot.ref.getDownloadURL();
+   
 
     const newPengembalian = new PengembalianModel({
       lokasi,
@@ -83,6 +78,13 @@ const createPengembalian = async (req, res) => {
       id_user: user._id,
       foto: photoURL,
     });
+
+    const photoFile = req.file;
+    const photoFileName = `pengembalian_${savedPengembalian._id}_${Date.now()}.jpg`;
+    const photoRef = storage.ref().child(photoFileName);
+    const photoSnapshot = await photoRef.put(photoFile.buffer); // Uploading the file buffer
+
+    const photoURL = await photoSnapshot.ref.getDownloadURL();
 
     const savedPengembalian = await newPengembalian.save();
 
