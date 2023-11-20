@@ -21,6 +21,7 @@ const createPengembalian = async (req, res) => {
       kondisi_aset,
       tanggal_pengembalian,
       lokasi,
+      foto,
       tagNumber,
       username,
     } = req.body;
@@ -67,7 +68,7 @@ const createPengembalian = async (req, res) => {
       });
     }
 
-    const photoFile = req.file;
+    const photoFile = req.foto;
     if (!photoFile || !photoFile.buffer) {
       return res.status(400).json({
         error: {
