@@ -66,6 +66,13 @@ const createPengembalian = async (req, res) => {
       });
     }
 
+    
+    const photoFile = req.file;
+    const photoFileName = `pengembalian_${existingPeminjaman._id}_${Date.now()}.jpg`;
+    const photoRef = storage.ref().child(photoFileName);
+    const photoSnapshot = await photoRef.put(photoFile.buffer);
+    const photoURL = await photoSnapshot.ref.getDownloadURL();
+
     const newPengembalian = new PengembalianModel({
       lokasi,
       kondisi_aset,
@@ -76,13 +83,6 @@ const createPengembalian = async (req, res) => {
       id_user: user._id,
       foto: photoURL,
     });
-
-    const photoFile = req.file;
-    const photoFileName = `pengembalian_${savedPengembalian._id}_${Date.now()}.jpg`;
-    const photoRef = storage.ref().child(photoFileName);
-    const photoSnapshot = await photoRef.put(photoFile.buffer);
-
-    const photoURL = await photoSnapshot.ref.getDownloadURL();
 
     const savedPengembalian = await newPengembalian.save();
 
