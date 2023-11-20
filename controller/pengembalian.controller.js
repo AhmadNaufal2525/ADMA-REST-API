@@ -3,7 +3,7 @@ const UserModel = require('../model/users.model');
 const PeminjamanModel = require('../model/peminjaman.model');
 const PengembalianModel = require('../model/pengembalian.model');
 const firebase = require('firebase/app');
-const storage = require('firebase/storage');
+require('firebase/storage');
 const firebaseConfig = {
     apiKey: "AIzaSyCApOuAwpMaGSiWzVM3drvbNQP2ewtBmQ4",
     authDomain: "sima-restapi.firebaseapp.com",
@@ -12,6 +12,7 @@ const firebaseConfig = {
     messagingSenderId: "818181470773",
     appId: "1:818181470773:web:dbd3f20aef5d2094a2cf7c"
 };
+
 firebase.initializeApp(firebaseConfig);
 
 const createPengembalian = async (req, res) => {
@@ -66,10 +67,19 @@ const createPengembalian = async (req, res) => {
       });
     }
 
-    
     const photoFile = req.file;
+    if (!photoFile || !photoFile.buffer) {
+      return res.status(400).json({
+        error: {
+          message: "File data is missing or invalid",
+        },
+      });
+    }
+
     const photoFileName = `pengembalian_${existingPeminjaman._id}_${Date.now()}.jpg`;
-    const photoRef = storage.ref().child(photoFileName);
+    const storageRef = firebase.storage().ref();
+    const photoRef = storageRef.child(photoFileName);
+
     const photoSnapshot = await photoRef.put(photoFile.buffer);
     const photoURL = await photoSnapshot.ref.getDownloadURL();
 
