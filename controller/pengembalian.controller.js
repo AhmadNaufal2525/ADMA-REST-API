@@ -42,11 +42,46 @@ const createPengembalian = async (req, res) => {
 
       const aset = await AsetModel.findOne({ tag_number: tagNumber });
 
-      // Rest of your existing code to validate and process the 'pengembalian'
+      if (!aset) {
+        return res.status(404).json({
+          error: {
+            message: "Asset not found",
+          },
+        });
+      }
 
-      // Your existing code for processing 'pengembalian'
+      if (!aset.is_borrowed) {
+        return res.status(400).json({
+          error: {
+            message: "Asset is not currently borrowed",
+          },
+        });
+      }
 
-      // New code for uploading the photo to Firebase Storage
+      const user = await UserModel.findOne({ username });
+
+      if (!user) {
+        return res.status(404).json({
+          error: {
+            message: "User not found",
+          },
+        });
+      }
+
+      const existingPeminjaman = await PeminjamanModel.findOne({
+        id_aset: aset._id,
+        id_user: user._id,
+        status: "Pending",
+      });
+
+      if (!existingPeminjaman) {
+        return res.status(400).json({
+          error: {
+            message: "No pending borrowing found for this asset and user",
+          },
+        });
+      }
+
       const photoFile = req.file;
       if (!photoFile || !photoFile.buffer) {
         return res.status(400).json({
@@ -56,16 +91,15 @@ const createPengembalian = async (req, res) => {
         });
       }
 
-      const pengembalian = new PengembalianModel(); // Assuming PengembalianModel initializes a new object
+      const pengembalian = new PengembalianModel();
 
-      // Set the properties with the data from req.body
       pengembalian.kondisi_aset = kondisi_aset;
       pengembalian.tanggal_pengembalian = tanggal_pengembalian;
       pengembalian.lokasi = lokasi;
       pengembalian.tagNumber = tagNumber;
       pengembalian.username = username;
 
-      const photoFileName = `Aset${existingPeminjaman._id}_${Date.now()}.jpg`;
+      const photoFileName = `Aset_${existingPeminjaman._id}_${Date.now()}.jpg`;
       const storageRef = ref(storage, photoFileName);
 
       const photoSnapshot = await uploadBytesResumable(storageRef, photoFile.buffer);
