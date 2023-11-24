@@ -1,24 +1,18 @@
 const UserModel = require('../model/users.model');
+const {initializeApp} = require('firebase/app');
 const AsetModel = require("../model/aset.model");
 const PeminjamanModel = require('../model/peminjaman.model');
 const PengembalianModel = require('../model/pengembalian.model');
-const firebase = require('firebase/app');
-require('firebase/storage');
+const config = require('../config/firebase.config');
+const { getStorage, ref, getDownloadURL, uploadBytesResumable } = require("firebase/storage");
 const multer = require('multer');
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage }).single('photoFile');
 
-const firebaseConfig = {
-    apiKey: "AIzaSyCApOuAwpMaGSiWzVM3drvbNQP2ewtBmQ4",
-    authDomain: "sima-restapi.firebaseapp.com",
-    projectId: "sima-restapi",
-    storageBucket: "sima-restapi.appspot.com",
-    messagingSenderId: "818181470773",
-    appId: "1:818181470773:web:dbd3f20aef5d2094a2cf7c"
-};
+initializeApp(config.firebaseConfig);
 
-firebase.initializeApp(firebaseConfig);
+const storage = getStorage();
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 const createPengembalian = async (req, res) => {
   try {
@@ -99,11 +93,10 @@ const createPengembalian = async (req, res) => {
       }
 
       const photoFileName = `Aset${existingPeminjaman._id}_${Date.now()}.jpg`;
-      const storageRef = firebase.storage().ref();
-      const photoRef = storageRef.child(photoFileName);
+      const storageRef = ref(storage, photoFileName);
 
-      const photoSnapshot = await photoRef.put(photoFile.buffer);
-      const photoURL = await photoSnapshot.ref.getDownloadURL();
+      const photoSnapshot = await uploadBytesResumable(storageRef, photoFile.buffer);
+      const photoURL = await getDownloadURL(photoSnapshot.ref);
 
       const newPengembalian = new PengembalianModel({
         lokasi,
