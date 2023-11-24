@@ -92,10 +92,16 @@ const createPengembalian = async (req, res) => {
         });
       }
 
-      const photoFileName = `Aset${existingPeminjaman._id}_${Date.now()}.jpg`;
+      
+
+      const photoFileName = `Aset_${existingPeminjaman._id}_${Date.now()}`;
       const storageRef = ref(storage, photoFileName);
 
-      const photoSnapshot = await uploadBytesResumable(storageRef, photoFile.buffer);
+      const metadata = {
+        contentType: 'image/png'
+      };
+      
+      const photoSnapshot = await uploadBytesResumable(storageRef, photoFile.buffer, metadata);
       const photoURL = await getDownloadURL(photoSnapshot.ref);
 
       const newPengembalian = new PengembalianModel({
