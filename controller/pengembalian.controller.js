@@ -111,7 +111,6 @@ const createPengembalian = async (req, res) => {
 
       const savedPengembalian = await newPengembalian.save();
 
-      aset.is_borrowed = false;
       await aset.save();
 
       existingPeminjaman.status = "-";
