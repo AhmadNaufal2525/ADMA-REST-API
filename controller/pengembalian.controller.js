@@ -119,7 +119,7 @@ const createPengembalian = async (req, res) => {
 
       await aset.save();
 
-      existingPeminjaman.status = "-";
+      existingPeminjaman.status = "Available";
       await existingPeminjaman.save();
 
       res.status(201).json({

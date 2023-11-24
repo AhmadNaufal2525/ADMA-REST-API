@@ -9,7 +9,7 @@ const PeminjamanSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['-', 'Pending', 'Approved', 'Rejected'],
+        enum: ['Available', 'Pending', 'Approved', 'Rejected'],
         default: 'Pending',
     },
     id_aset: {
