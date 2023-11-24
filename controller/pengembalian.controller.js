@@ -94,7 +94,7 @@ const createPengembalian = async (req, res) => {
 
       
 
-      const photoFileName = `Aset_${existingPeminjaman._id}_${Date.now()}`;
+      const photoFileName = `Aset:${existingPeminjaman._id}`;
       const storageRef = ref(storage, photoFileName);
 
       const metadata = {
