@@ -16,7 +16,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 const createPengembalian = async (req, res) => {
   try {
-    upload.single('photo')(req, res, async function (err) {
+    upload.single('foto')(req, res, async function (err) {
       if (err instanceof multer.MulterError) {
         return res.status(400).json({
           error: {
