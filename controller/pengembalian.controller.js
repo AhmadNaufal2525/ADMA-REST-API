@@ -16,7 +16,6 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 const createPengembalian = async (req, res) => {
   try {
-    const validTypes = ['image/jpeg', 'image/png', 'image/jpg']; 
     upload.single('foto')(req, res, async function (err) {
       if (err instanceof multer.MulterError) {
         return res.status(400).json({
@@ -97,7 +96,7 @@ const createPengembalian = async (req, res) => {
       const storageRef = ref(storage, photoFileName);
 
       const metadata = {
-        contentType: validTypes,
+        contentType: 'image/jpg'
       };
       
       const photoSnapshot = await uploadBytesResumable(storageRef, photoFile.buffer, metadata);
