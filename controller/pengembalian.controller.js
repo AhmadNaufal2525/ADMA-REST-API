@@ -135,4 +135,61 @@ const createPengembalian = async (req, res) => {
   }
 };
 
-module.exports = { createPengembalian };
+const getAllPengembalian = async (req, res) => {
+  try {
+    const pengembalian = await PengembalianModel.find()
+      .populate("id_aset")
+      .populate("id_user", "username");
+    res
+      .status(200)
+      .json({ message: "Daftar pengambalian berhasil diambil", pengembalian });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Gagal mengambil daftar pengembalian: " + error.message });
+  }
+};
+
+const getPengembalianByUserId = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const pengembalian = await PengembalianModel.find({ id_user: userId }).populate(
+      "id_aset"
+    );
+
+    if (!pengembalian) {
+      return res.status(404).json({ error: "Pengembalian tidak ditemukan" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Pengembalian berhasil diambil", pengembalian });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Gagal mengambil pengembalian: " + error.message });
+  }
+};
+
+const getPengembalianById = async (req, res) => {
+  const pengembalianId = req.params.id;
+  try {
+    const pengembalian = await PengembalianModel.findById(pengembalianId)
+      .populate("id_aset")
+      .populate("id_user", "username");
+
+    if (!pengembalian) {
+      return res.status(404).json({ message: "Pengembalian not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Pengembalian berhasil diambil", pengembalian });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Gagal mengambil pengembalian: " + error.message });
+  }
+};
+
+module.exports = { createPengembalian, getAllPengembalian, getPengembalianById, getPengembalianByUserId };
