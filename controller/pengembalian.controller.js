@@ -6,6 +6,7 @@ const PengembalianModel = require('../model/pengembalian.model');
 const config = require('../config/firebase.config');
 const { getStorage, ref, getDownloadURL, uploadBytesResumable } = require("firebase/storage");
 const multer = require('multer');
+const mime = require('mimetype');
 
 
 initializeApp(config.firebaseConfig);
@@ -16,6 +17,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 const createPengembalian = async (req, res) => {
   try {
+    const validMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
     upload.single('foto')(req, res, async function (err) {
       if (err instanceof multer.MulterError) {
         return res.status(400).json({
@@ -84,7 +86,7 @@ const createPengembalian = async (req, res) => {
       }
 
       const photoFile = req.file;
-      if (!photoFile || !photoFile.buffer || !photoFile.mimetype.startsWith('image')) {
+      if (!photoFile || !photoFile.buffer || !validMimeTypes.includes(mime.getType(photoFile.originalname))) {
         return res.status(400).json({
           error: {
             message: "File data is missing or invalid",
@@ -96,7 +98,7 @@ const createPengembalian = async (req, res) => {
       const storageRef = ref(storage, photoFileName);
 
       const metadata = {
-        contentType: 'image/jpg'
+        contentType: validMimeTypes,
       };
       
       const photoSnapshot = await uploadBytesResumable(storageRef, photoFile.buffer, metadata);

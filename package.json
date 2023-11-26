@@ -29,6 +29,7 @@
     "firebase": "^10.6.0",
     "firebase-admin": "^11.11.0",
     "jsonwebtoken": "^9.0.2",
+    "mimetype": "^0.0.8",
     "mongoose": "^7.5.3",
     "multer": "^1.4.5-lts.1"
   },
