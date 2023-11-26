@@ -96,7 +96,7 @@ const createPengembalian = async (req, res) => {
       const storageRef = ref(storage, photoFileName);
 
       const metadata = {
-        contentType: 'image/jpg'
+        contentType: 'image/png'
       };
       
       const photoSnapshot = await uploadBytesResumable(storageRef, photoFile.buffer, metadata);
