@@ -92,13 +92,11 @@ const createPengembalian = async (req, res) => {
         });
       }
 
-      
-
       const photoFileName = `Aset:${existingPeminjaman._id}`;
       const storageRef = ref(storage, photoFileName);
 
       const metadata = {
-        contentType: 'image/png'
+        contentType: 'image/jpg'
       };
       
       const photoSnapshot = await uploadBytesResumable(storageRef, photoFile.buffer, metadata);
