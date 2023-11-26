@@ -84,7 +84,7 @@ const createPengembalian = async (req, res) => {
       }
 
       const photoFile = req.file;
-      if (!photoFile || !photoFile.buffer || !photoFile.mimetype.startsWith('image/jpg')) {
+      if (!photoFile || !photoFile.buffer || !photoFile.mimetype.startsWith('image')) {
         return res.status(400).json({
           error: {
             message: "File data is missing or invalid",
