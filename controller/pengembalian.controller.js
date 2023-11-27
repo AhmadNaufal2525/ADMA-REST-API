@@ -157,19 +157,16 @@ const getPengembalianByUserId = async (req, res) => {
       "id_aset"
     );
 
-    if (!pengembalian) {
-      return res.status(404).json({ error: "Pengembalian tidak ditemukan" });
+    if (pengembalian.length === 0) {
+      return res.status(404).json({ error: "Tidak ada pengembalian untuk pengguna ini" });
     }
 
-    res
-      .status(200)
-      .json({ message: "Pengembalian berhasil diambil", pengembalian });
+    res.status(200).json({ message: "Pengembalian berhasil diambil", pengembalian });
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "Gagal mengambil pengembalian: " + error.message });
+    res.status(500).json({ error: "Gagal mengambil pengembalian: " + error.message });
   }
 };
+
 
 const getPengembalianById = async (req, res) => {
   const pengembalianId = req.params.id;
