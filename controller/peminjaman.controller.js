@@ -181,8 +181,8 @@ const getPeminjamanByUserId = async (req, res) => {
       "id_aset"
     );
 
-    if (!peminjaman) {
-      return res.status(404).json({ error: "Peminjaman tidak ditemukan" });
+    if (peminjaman.length === 0) {
+      return res.status(404).json({ error: "Tidak ada peminjaman untuk pengguna ini" });
     }
 
     res
