@@ -110,19 +110,29 @@ const acceptPeminjaman = async (req, res) => {
       action: 'Approved',
       id_admin: adminId,
     });
-
+    
+    peminjaman.status = 'Approved';
     await historyEntry.save();
 
-    const approvedPeminjaman = await PeminjamanModel.findByIdAndDelete(peminjamanId);
-    if (!approvedPeminjaman) {
-      return res.status(404).json({ error: 'Peminjaman not found' });
-    }
+    setTimeout(async () => {
+      try {
+        const approvedPeminjaman = await PeminjamanModel.findByIdAndDelete(peminjamanId);
+        if (!approvedPeminjaman) {
+          console.log('Peminjaman not found');
+        } else {
+          console.log('Peminjaman telah dihapus setelah 1 jam:', approvedPeminjaman);
+        }
+      } catch (error) {
+        console.error('Error deleting peminjaman:', error);
+      }
+    }, 1 * 60 * 60 * 1000);
 
     res.status(200).json({ message: 'Peminjaman accepted', peminjaman, adminId });
   } catch (error) {
     res.status(500).json({ error: 'Error accepting peminjaman: ' + error.message });
   }
 };
+
 
 const rejectPeminjaman = async (req, res) => {
   try {
