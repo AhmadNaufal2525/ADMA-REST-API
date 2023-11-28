@@ -7,7 +7,7 @@ router.post('/peminjaman', createPeminjaman);
 router.get('/listPeminjam', getAllPeminjaman);
 router.get('/listPeminjam/:id', getPeminjamanById);
 router.get('/peminjam/:id', getPeminjamanByUserId);
-router.put('/acceptPeminjaman/:id', acceptPeminjaman);
-router.put('/rejectPeminjaman/:id', rejectPeminjaman);
+router.post('/acceptPeminjaman/:id', acceptPeminjaman);
+router.post('/rejectPeminjaman/:id', rejectPeminjaman);
 
 module.exports = router;
