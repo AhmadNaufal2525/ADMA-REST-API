@@ -87,7 +87,6 @@ const getAllPeminjaman = async (req, res) => {
     }
 };
 
-
 const acceptPeminjaman = async (req, res) => {
   try {
     const peminjamanId = req.params.id;
