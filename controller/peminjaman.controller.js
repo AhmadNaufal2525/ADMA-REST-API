@@ -90,7 +90,8 @@ const getAllPeminjaman = async (req, res) => {
 const acceptPeminjaman = async (req, res) => {
   try {
     const peminjamanId = req.params.id;
-    const userId = req.params.id;
+    const userId = req.user.id;
+    const adminId = req.user.id;
     const peminjaman = await PeminjamanModel.findById(peminjamanId);
 
     if (!peminjaman) {
@@ -108,6 +109,7 @@ const acceptPeminjaman = async (req, res) => {
       id_peminjaman: peminjaman._id,
       id_user: userId,
       action: 'approved',
+      adminId: adminId,
     });
 
     await historyEntry.save();
