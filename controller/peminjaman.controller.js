@@ -109,7 +109,7 @@ const acceptPeminjaman = async (req, res) => {
       id_peminjaman: peminjaman._id,
       id_user: userId,
       action: 'Approved',
-      adminId: adminId,
+      id_admin: adminId,
     });
 
     await historyEntry.save();

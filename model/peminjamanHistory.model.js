@@ -12,6 +12,11 @@ const peminjamanHistorySchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    id_admin: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
     action: {
       type: String,
       enum: ['Rejected', 'Approved'],
