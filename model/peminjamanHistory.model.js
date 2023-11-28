@@ -14,7 +14,7 @@ const peminjamanHistorySchema = new mongoose.Schema(
     },
     action: {
       type: String,
-      enum: ['rejected', 'approved'],
+      enum: ['Rejected', 'Approved'],
     },
   },
   { timestamps: true, versionKey: false }
