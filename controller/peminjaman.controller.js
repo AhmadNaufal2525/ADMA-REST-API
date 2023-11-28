@@ -90,6 +90,7 @@ const getAllPeminjaman = async (req, res) => {
 const acceptPeminjaman = async (req, res) => {
   try {
     const peminjamanId = req.params.id;
+    const userId = req.userId;
     const adminId = req.body.adminId;
     const peminjaman = await PeminjamanModel.findById(peminjamanId);
 
