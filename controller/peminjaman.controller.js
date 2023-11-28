@@ -90,7 +90,6 @@ const getAllPeminjaman = async (req, res) => {
 const acceptPeminjaman = async (req, res) => {
   try {
     const peminjamanId = req.params.id;
-    const userId = req.params.id;
     const adminId = req.body.adminId;
     const peminjaman = await PeminjamanModel.findById(peminjamanId);
 
@@ -107,7 +106,7 @@ const acceptPeminjaman = async (req, res) => {
 
     const historyEntry = new PeminjamanHistoryModel({
       id_peminjaman: peminjaman._id,
-      id_user: userId,
+      id_user: peminjaman.id_user,
       action: 'Approved',
       id_admin: adminId,
     });
