@@ -108,7 +108,7 @@ const acceptPeminjaman = async (req, res) => {
     const historyEntry = new PeminjamanHistoryModel({
       id_peminjaman: peminjaman._id,
       id_user: userId,
-      action: 'approved',
+      action: 'Approved',
       adminId: adminId,
     });
 
