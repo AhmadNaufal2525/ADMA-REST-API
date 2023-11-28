@@ -91,7 +91,7 @@ const acceptPeminjaman = async (req, res) => {
   try {
     const peminjamanId = req.params.id;
     const userId = req.params.id;
-    const adminId = req.body.id;
+    const adminId = req.body.userId;
     const peminjaman = await PeminjamanModel.findById(peminjamanId);
 
     if (!peminjaman) {
