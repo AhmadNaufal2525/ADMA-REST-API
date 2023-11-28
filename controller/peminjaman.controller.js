@@ -119,7 +119,7 @@ const acceptPeminjaman = async (req, res) => {
       return res.status(404).json({ error: 'Peminjaman not found' });
     }
 
-    res.status(200).json({ message: 'Peminjaman accepted', peminjaman });
+    res.status(200).json({ message: 'Peminjaman accepted', peminjaman, adminId });
   } catch (error) {
     res.status(500).json({ error: 'Error accepting peminjaman: ' + error.message });
   }
