@@ -2,6 +2,7 @@ const AsetModel = require("../model/aset.model");
 const UserModel = require('../model/users.model');
 const PeminjamanModel = require('../model/peminjaman.model');
 const PeminjamanHistoryModel = require('../model/peminjamanHistory.model');
+
 const createPeminjaman = async (req, res) => {
   try {
     const {
@@ -86,17 +87,6 @@ const getAllPeminjaman = async (req, res) => {
     }
 };
 
-const sendNotification = async (deviceToken, title, body) => {
-  const message = {
-    notification: {
-      title,
-      body,
-    },
-    token: deviceToken,
-  };
-
-  await messaging.send(message);
-};
 
 const acceptPeminjaman = async (req, res) => {
   try {
@@ -114,11 +104,6 @@ const acceptPeminjaman = async (req, res) => {
     }
     aset.is_borrowed = true;
     await aset.save();
-
-    const user = await UserModel.findById(peminjaman.id_user);
-    const deviceToken = user.fcmToken;
-
-    await sendNotification(deviceToken, 'Peminjaman Approved', 'Your peminjaman has been accepted.');
 
     const historyEntry = new PeminjamanHistoryModel({
       id_peminjaman: peminjaman._id,
@@ -156,11 +141,6 @@ const rejectPeminjaman = async (req, res) => {
     });
 
     await historyEntry.save();
-
-    const user = await UserModel.findById(peminjaman.id_user);
-    const deviceToken = user.fcmToken;
-
-    await sendNotification(deviceToken, 'Peminjaman Rejected', 'Your peminjaman has been rejected.');
 
     const deletedPeminjaman = await PeminjamanModel.findByIdAndDelete(peminjamanId);
     if (!deletedPeminjaman) {
