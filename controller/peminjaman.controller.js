@@ -2,12 +2,6 @@ const AsetModel = require("../model/aset.model");
 const UserModel = require('../model/users.model');
 const PeminjamanModel = require('../model/peminjaman.model');
 const PeminjamanHistoryModel = require('../model/peminjamanHistory.model');
-const FCM = require('fcm-node');
-const dotenv = require("dotenv");
-dotenv.config();
-
-const serverKey = process.env.SERVER_KEY;
-const fcm = new FCM(serverKey);
 
 const createPeminjaman = async (req, res) => {
   try {
@@ -93,32 +87,6 @@ const getAllPeminjaman = async (req, res) => {
     }
 };
 
-const sendNotification = async (userToken, title, body) => {
-  try {
-    const message = {
-      to: userToken,
-      notification: {
-        title: title,
-        body: body,
-      },
-      data: {
-        my_key: 'test',
-        my_another_key: 'test',
-      },
-    };
-
-    fcm.send(message, function (err, response) {
-      if (err) {
-        console.log("Something has gone wrong!", err);
-      } else {
-        console.log("Successfully sent with response: ", response);
-      }
-    });
-  } catch (error) {
-    console.error("Error sending notification:", error);
-  }
-};
-
 const acceptPeminjaman = async (req, res) => {
   try {
     const peminjamanId = req.params.id;
@@ -163,11 +131,6 @@ const acceptPeminjaman = async (req, res) => {
         console.error('Error deleting peminjaman:', error);
       }
     }, 1 * 60 * 60 * 1000);
-
-    const userToken = process.env.USER_TOKEN;
-    const notificationTitle = 'Peminjaman Disetujui';
-    const notificationBody = 'Peminjaman yang anda lakukan telah disetujui oleh Admin, silahkan ambil aset dan konfirmasi ke admin bidang';
-    await sendNotification(userToken, notificationTitle, notificationBody);
     
     res.status(200).json({ message: 'Peminjaman accepted', peminjaman, adminId });
   } catch (error) {
