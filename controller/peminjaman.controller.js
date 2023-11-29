@@ -112,6 +112,7 @@ const acceptPeminjaman = async (req, res) => {
     });
     
     peminjaman.status = "Approved";
+    await peminjaman.save();
     await historyEntry.save();
 
     setTimeout(async () => {
