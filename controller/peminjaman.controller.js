@@ -97,6 +97,10 @@ const acceptPeminjaman = async (req, res) => {
       return res.status(404).json({ error: 'Peminjaman not found' });
     }
 
+    if (peminjaman.status === 'Approved') {
+      return res.status(400).json({ error: 'Peminjaman already approved' });
+    }
+
     const aset = await AsetModel.findById(peminjaman.id_aset);
     if (!aset) {
       return res.status(404).json({ error: 'Corresponding asset not found' });
