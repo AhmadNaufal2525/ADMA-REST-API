@@ -293,8 +293,9 @@ const rejectPengembalian = async (req, res) => {
 
 const getPengembalianHistory = async (req, res) => {
   try {
-    const pengembalianHistoryId = req.params.id;
-    const pengembalianHistory = await PengembalianHistoryModel.find().populate(pengembalianHistoryId)
+    const pengembalianHistory = await PengembalianHistoryModel.find()
+      .populate('id_pengembalian')
+      .populate('id_aset')
       .populate('id_user','username')
       .populate('id_admin', 'username');
 
@@ -315,6 +316,8 @@ const getPengembalianHistoryById = async (req, res) => {
   try {
     const pengembalianHistoryId = req.params.id;
     const pengembalianHistory = await PengembalianHistoryModel.findById(pengembalianHistoryId)
+      .populate('id_pengembalian')
+      .populate('id_aset')
       .populate('id_user','username')
       .populate('id_admin', 'username');
 
