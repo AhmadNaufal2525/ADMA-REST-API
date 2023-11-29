@@ -236,6 +236,7 @@ const getPeminjamanHistory = async (req, res) => {
   try {
     const peminjamanHistoryId = req.params.id;
     const peminjamanHistory = await PeminjamanHistoryModel.find(peminjamanHistoryId)
+      .populate("id_aset")
       .populate('id_user','username')
       .populate('id_admin', 'username');
 
