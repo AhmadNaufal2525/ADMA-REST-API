@@ -1,7 +1,10 @@
 const AsetModel = require("../model/aset.model");
-const UserModel = require('../model/users.model');
-const PeminjamanModel = require('../model/peminjaman.model');
-const PeminjamanHistoryModel = require('../model/peminjamanHistory.model');
+const UserModel = require("../model/users.model");
+const PeminjamanModel = require("../model/peminjaman.model");
+const PeminjamanHistoryModel = require("../model/peminjamanHistory.model");
+const axios = require("axios");
+const dotenv = require("dotenv");
+dotenv.config();
 
 const createPeminjaman = async (req, res) => {
   try {
@@ -73,18 +76,44 @@ const createPeminjaman = async (req, res) => {
 };
 
 const getAllPeminjaman = async (req, res) => {
-    try {
-      const peminjaman = await PeminjamanModel.find()
-        .populate("id_aset")
-        .populate("id_user", "username");
-      res
-        .status(200)
-        .json({ message: "Daftar peminjaman berhasil diambil", peminjaman });
-    } catch (error) {
-      res
-        .status(500)
-        .json({ error: "Gagal mengambil daftar peminjaman: " + error.message });
-    }
+  try {
+    const peminjaman = await PeminjamanModel.find()
+      .populate("id_aset")
+      .populate("id_user", "username");
+    res
+      .status(200)
+      .json({ message: "Daftar peminjaman berhasil diambil", peminjaman });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Gagal mengambil daftar peminjaman: " + error.message });
+  }
+};
+
+const sendNotification = async (deviceToken, title, body) => {
+  const url = "https://fcm.googleapis.com/fcm/send";
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization:`key=${process.env.FCM_SERVER_KEY}`,
+  };
+
+  try {
+    const response = await axios.post(
+      url,
+      {
+        to: deviceToken,
+        notification: {
+          title: title,
+          body: body,
+        },
+      },
+      { headers }
+    );
+
+    return response.data;
+  } catch (error) {
+    throw new Error("Error sending notification: " + error.message);
+  }
 };
 
 const acceptPeminjaman = async (req, res) => {
@@ -94,50 +123,64 @@ const acceptPeminjaman = async (req, res) => {
     const peminjaman = await PeminjamanModel.findById(peminjamanId);
 
     if (!peminjaman) {
-      return res.status(404).json({ error: 'Peminjaman not found' });
+      return res.status(404).json({ error: "Peminjaman not found" });
     }
 
-    if (peminjaman.status === 'Approved') {
-      return res.status(400).json({ error: 'Peminjaman already approved' });
+    if (peminjaman.status === "Approved") {
+      return res.status(400).json({ error: "Peminjaman already approved" });
     }
 
     const aset = await AsetModel.findById(peminjaman.id_aset);
     if (!aset) {
-      return res.status(404).json({ error: 'Corresponding asset not found' });
+      return res.status(404).json({ error: "Corresponding asset not found" });
     }
-    aset.is_borrowed = true;
-    await aset.save();
+
+    peminjaman.status = "Approved";
+    await peminjaman.save();
 
     const historyEntry = new PeminjamanHistoryModel({
       id_peminjaman: peminjaman._id,
       id_user: peminjaman.id_user,
-      action: 'Approved',
+      action: "Approved",
       id_admin: adminId,
     });
-    
-    peminjaman.status = "Approved";
-    await peminjaman.save();
     await historyEntry.save();
+    const userDeviceToken = process.env.USER_DEVICE_TOKEN; 
+    const notificationTitle = "Peminjaman Disetujui";
+    const notificationBody = "Peminjaman Anda telah disetujui.";
+    await sendNotification(
+      userDeviceToken,
+      notificationTitle,
+      notificationBody
+    );
 
     setTimeout(async () => {
       try {
-        const approvedPeminjaman = await PeminjamanModel.findByIdAndDelete(peminjamanId);
+        const approvedPeminjaman = await PeminjamanModel.findByIdAndDelete(
+          peminjamanId
+        );
         if (!approvedPeminjaman) {
-          console.log('Peminjaman not found');
+          console.log("Peminjaman not found");
         } else {
-          console.log('Peminjaman telah dihapus setelah 1 jam:', approvedPeminjaman);
+          console.log(
+            "Peminjaman telah dihapus setelah 1 jam:",
+            approvedPeminjaman
+          );
         }
       } catch (error) {
-        console.error('Error deleting peminjaman:', error);
+        console.error("Error deleting peminjaman:", error);
       }
     }, 1 * 60 * 60 * 1000);
-    
-    res.status(200).json({ message: 'Peminjaman accepted', peminjaman, adminId });
+
+    res
+      .status(200)
+      .json({ message: "Peminjaman accepted", peminjaman, adminId });
   } catch (error) {
-    res.status(500).json({ error: 'Error accepting peminjaman: ' + error.message });
+    res
+      .status(500)
+      .json({ error: "Error accepting peminjaman: " + error.message });
   }
 };
-
 
 const rejectPeminjaman = async (req, res) => {
   try {
@@ -146,25 +189,24 @@ const rejectPeminjaman = async (req, res) => {
     const peminjaman = await PeminjamanModel.findById(peminjamanId);
 
     if (!peminjaman) {
-      return res.status(404).json({ error: 'Peminjaman not found' });
+      return res.status(404).json({ error: "Peminjaman not found" });
     }
 
-    if (peminjaman.status === 'Rejected') {
-      return res.status(400).json({ error: 'Peminjaman already rejected' });
+    if (peminjaman.status === "Rejected") {
+      return res.status(400).json({ error: "Peminjaman already rejected" });
     }
 
     const aset = await AsetModel.findById(peminjaman.id_aset);
     if (!aset) {
-      return res.status(404).json({ error: 'Corresponding asset not found' });
+      return res.status(404).json({ error: "Corresponding asset not found" });
     }
 
     const historyEntry = new PeminjamanHistoryModel({
       id_peminjaman: peminjaman._id,
       id_user: peminjaman.id_user,
-      action: 'Rejected',
+      action: "Rejected",
       id_admin: adminId,
     });
-
 
     peminjaman.status = "Rejected";
     await historyEntry.save();
@@ -172,23 +214,31 @@ const rejectPeminjaman = async (req, res) => {
 
     setTimeout(async () => {
       try {
-        const rejectedPeminjaman = await PeminjamanModel.findByIdAndDelete(peminjamanId);
+        const rejectedPeminjaman = await PeminjamanModel.findByIdAndDelete(
+          peminjamanId
+        );
         if (!rejectedPeminjaman) {
-          console.log('Peminjaman not found');
+          console.log("Peminjaman not found");
         } else {
-          console.log('Peminjaman telah dihapus setelah 1 jam:', rejectedPeminjaman);
+          console.log(
+            "Peminjaman telah dihapus setelah 1 jam:",
+            rejectedPeminjaman
+          );
         }
       } catch (error) {
-        console.error('Error deleting peminjaman:', error);
+        console.error("Error deleting peminjaman:", error);
       }
     }, 1 * 60 * 60 * 1000);
 
-    res.status(200).json({ message: 'Peminjaman rejected', peminjaman, adminId });
+    res
+      .status(200)
+      .json({ message: "Peminjaman rejected", peminjaman, adminId });
   } catch (error) {
-    res.status(500).json({ error: 'Error rejecting peminjaman: ' + error.message });
+    res
+      .status(500)
+      .json({ error: "Error rejecting peminjaman: " + error.message });
   }
 };
-
 
 const getPeminjamanByUserId = async (req, res) => {
   try {
@@ -198,7 +248,9 @@ const getPeminjamanByUserId = async (req, res) => {
     );
 
     if (peminjaman.length === 0) {
-      return res.status(404).json({ error: "Tidak ada peminjaman untuk pengguna ini" });
+      return res
+        .status(404)
+        .json({ error: "Tidak ada peminjaman untuk pengguna ini" });
     }
 
     res
@@ -215,8 +267,8 @@ const getPeminjamanById = async (req, res) => {
   const peminjamanId = req.params.id;
   try {
     const peminjaman = await PeminjamanModel.findById(peminjamanId)
-      .populate('id_peminjaman', 'id_aset')
-      .populate('id_user', 'username');
+      .populate("id_peminjaman", "id_aset")
+      .populate("id_user", "username");
 
     if (!peminjaman) {
       return res.status(404).json({ message: "Peminjaman not found" });
@@ -236,48 +288,66 @@ const getPeminjamanHistory = async (req, res) => {
   try {
     const peminjamanHistory = await PeminjamanHistoryModel.find()
       .populate({
-        path: 'id_peminjaman',
-        populate: { path: 'id_aset' }
+        path: "id_peminjaman",
+        populate: { path: "id_aset" },
       })
-      .populate('id_user','username')
-      .populate('id_admin', 'username');
+      .populate("id_user", "username")
+      .populate("id_admin", "username");
 
     if (peminjamanHistory.length === 0) {
-      return res.status(404).json({ error: 'No history found for this peminjaman' });
+      return res
+        .status(404)
+        .json({ error: "No history found for this peminjaman" });
     }
 
     res.status(200).json({
-      message: 'Peminjaman history retrieved successfully',
+      message: "Peminjaman history retrieved successfully",
       peminjamanHistory,
     });
   } catch (error) {
-    res.status(500).json({ error: 'Error retrieving peminjaman history: ' + error.message });
+    res
+      .status(500)
+      .json({ error: "Error retrieving peminjaman history: " + error.message });
   }
 };
 
 const getPeminjamanHistoryById = async (req, res) => {
   try {
     const peminjamanHistoryId = req.params.id;
-    const peminjamanHistory = await PeminjamanHistoryModel.findById(peminjamanHistoryId)
+    const peminjamanHistory = await PeminjamanHistoryModel.findById(
+      peminjamanHistoryId
+    )
       .populate({
-        path: 'id_peminjaman',
-        populate: { path: 'id_aset' }
+        path: "id_peminjaman",
+        populate: { path: "id_aset" },
       })
-      .populate('id_user', 'username')
-      .populate('id_admin', 'username');
+      .populate("id_user", "username")
+      .populate("id_admin", "username");
 
     if (peminjamanHistory.length === 0) {
-      return res.status(404).json({ error: 'No history found for this peminjaman ID' });
+      return res
+        .status(404)
+        .json({ error: "No history found for this peminjaman ID" });
     }
 
     res.status(200).json({
-      message: 'Peminjaman history retrieved successfully',
+      message: "Peminjaman history retrieved successfully",
       peminjamanHistory,
     });
   } catch (error) {
-    res.status(500).json({ error: 'Error retrieving peminjaman history: ' + error.message });
+    res
+      .status(500)
+      .json({ error: "Error retrieving peminjaman history: " + error.message });
   }
 };
 
-
-module.exports = { createPeminjaman, getAllPeminjaman, getPeminjamanByUserId, rejectPeminjaman, acceptPeminjaman, getPeminjamanById, getPeminjamanHistory, getPeminjamanHistoryById };
+module.exports = {
+  createPeminjaman,
+  getAllPeminjaman,
+  getPeminjamanByUserId,
+  rejectPeminjaman,
+  acceptPeminjaman,
+  getPeminjamanById,
+  getPeminjamanHistory,
+  getPeminjamanHistoryById,
+};
