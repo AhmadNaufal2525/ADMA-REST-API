@@ -146,13 +146,16 @@ const acceptPeminjaman = async (req, res) => {
     });
     await historyEntry.save();
     const userDeviceToken = process.env.USER_DEVICE_TOKEN; 
-    const notificationTitle = "Peminjaman Disetujui";
-    const notificationBody = "Peminjaman Anda telah disetujui.";
+    const notificationTitle = "Notifikasi Peminjaman";
+    const notificationBody = "Peminjaman anda telah disetujui oleh Admin";
     await sendNotification(
       userDeviceToken,
       notificationTitle,
       notificationBody
     );
+
+    aset.is_borrowed = true;
+    await aset.save();
 
     setTimeout(async () => {
       try {
@@ -208,6 +211,14 @@ const rejectPeminjaman = async (req, res) => {
       id_admin: adminId,
     });
 
+    const userDeviceToken = process.env.USER_DEVICE_TOKEN; 
+    const notificationTitle = "Notifikasi Peminjaman";
+    const notificationBody = "Peminjaman anda ditolak, silahkan ajukan kembali aset yang akan dipinjam";
+    await sendNotification(
+      userDeviceToken,
+      notificationTitle,
+      notificationBody
+    );
     peminjaman.status = "Rejected";
     await historyEntry.save();
     await peminjaman.save();

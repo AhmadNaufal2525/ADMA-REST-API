@@ -7,6 +7,9 @@ const config = require('../config/firebase.config');
 const { getStorage, ref, getDownloadURL, uploadBytesResumable } = require("firebase/storage");
 const multer = require('multer');
 const PengembalianHistoryModel = require('../model/pengembalianHIstory.model');
+const axios = require("axios");
+const dotenv = require("dotenv");
+dotenv.config();
 
 
 initializeApp(config.firebaseConfig);
@@ -190,6 +193,32 @@ const getPengembalianById = async (req, res) => {
   }
 };
 
+const sendNotification = async (deviceToken, title, body) => {
+  const url = "https://fcm.googleapis.com/fcm/send";
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization:`key=${process.env.FCM_SERVER_KEY}`,
+  };
+
+  try {
+    const response = await axios.post(
+      url,
+      {
+        to: deviceToken,
+        notification: {
+          title: title,
+          body: body,
+        },
+      },
+      { headers }
+    );
+
+    return response.data;
+  } catch (error) {
+    throw new Error("Error sending notification: " + error.message);
+  }
+};
+
 const acceptPengembalian = async (req, res) => {
   try {
     const pengambalianId = req.params.id;
@@ -221,6 +250,15 @@ const acceptPengembalian = async (req, res) => {
     pengembalian.status = "Approved";
     await pengembalian.save();
     await historyEntry.save();
+
+    const userDeviceToken = process.env.USER_DEVICE_TOKEN; 
+    const notificationTitle = "Notifikasi Pengembalian";
+    const notificationBody = "Pengembalian anda telah disetujui oleh Admin";
+    await sendNotification(
+      userDeviceToken,
+      notificationTitle,
+      notificationBody
+    );
 
     setTimeout(async () => {
       try {
@@ -271,6 +309,15 @@ const rejectPengembalian = async (req, res) => {
     pengembalian.status = "Rejected";
     await pengembalian.save();
     await historyEntry.save();
+
+    const userDeviceToken = process.env.USER_DEVICE_TOKEN; 
+    const notificationTitle = "Notifikasi Pengembalian";
+    const notificationBody = "Pengembalian anda ditolak, silahkan ajukan kembali aset yang akan dikembalikan";
+    await sendNotification(
+      userDeviceToken,
+      notificationTitle,
+      notificationBody
+    );
 
     setTimeout(async () => {
       try {
