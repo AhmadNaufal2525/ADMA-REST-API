@@ -142,27 +142,48 @@ const acceptPeminjaman = async (req, res) => {
 const rejectPeminjaman = async (req, res) => {
   try {
     const peminjamanId = req.params.id;
-    const userId = req.params.id;
+    const adminId = req.body.adminId;
     const peminjaman = await PeminjamanModel.findById(peminjamanId);
 
     if (!peminjaman) {
       return res.status(404).json({ error: 'Peminjaman not found' });
     }
 
-    const historyEntry = new PeminjamanHistoryModel({
-      id_peminjaman: peminjaman._id,
-      id_user: userId,
-      action: 'rejected',
-    });
-
-    await historyEntry.save();
-
-    const deletedPeminjaman = await PeminjamanModel.findByIdAndDelete(peminjamanId);
-    if (!deletedPeminjaman) {
-      return res.status(404).json({ error: 'Peminjaman not found' });
+    if (peminjaman.status === 'Rejected') {
+      return res.status(400).json({ error: 'Peminjaman already rejected' });
     }
 
-    res.status(200).json({ message: 'Peminjaman rejected', peminjaman: deletedPeminjaman });
+    const aset = await AsetModel.findById(peminjaman.id_aset);
+    if (!aset) {
+      return res.status(404).json({ error: 'Corresponding asset not found' });
+    }
+
+    const historyEntry = new PeminjamanHistoryModel({
+      id_peminjaman: peminjaman._id,
+      id_user: peminjaman.id_user,
+      action: 'Rejected',
+      id_admin: adminId,
+    });
+
+
+    peminjaman.status = "Rejected";
+    await historyEntry.save();
+    await peminjaman.save();
+
+    setTimeout(async () => {
+      try {
+        const rejectedPeminjaman = await PeminjamanModel.findByIdAndDelete(peminjamanId);
+        if (!rejectedPeminjaman) {
+          console.log('Peminjaman not found');
+        } else {
+          console.log('Peminjaman telah dihapus setelah 1 jam:', rejectedPeminjaman);
+        }
+      } catch (error) {
+        console.error('Error deleting peminjaman:', error);
+      }
+    }, 1 * 60 * 60 * 1000);
+
+    res.status(200).json({ message: 'Peminjaman rejected', peminjaman, adminId });
   } catch (error) {
     res.status(500).json({ error: 'Error rejecting peminjaman: ' + error.message });
   }
