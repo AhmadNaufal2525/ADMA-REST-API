@@ -7,6 +7,11 @@ const peminjamanHistorySchema = new mongoose.Schema(
       ref: 'Peminjaman',
       required: true,
     },
+    id_aset: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Aset',
+      required: true,
+    },
     id_user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
