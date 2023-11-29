@@ -73,7 +73,7 @@ const createPengembalian = async (req, res) => {
       const existingPeminjaman = await PeminjamanModel.findOne({
         id_aset: aset._id,
         id_user: user._id,
-        status: "Pending",
+        status: "Approved",
       });
 
       if (!existingPeminjaman) {
