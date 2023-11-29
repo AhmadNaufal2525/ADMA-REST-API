@@ -237,9 +237,9 @@ const getPeminjamanHistory = async (req, res) => {
     const peminjamanHistory = await PeminjamanHistoryModel.find()
       .populate({
         path: 'id_peminjaman',
-        populate: { path: 'id_aset' }
+        populate: { path: 'id_aset' },
+        populate: { path: 'id_user', select: 'username'}
       })
-      .populate('id_user','username')
       .populate('id_admin', 'username');
 
     if (peminjamanHistory.length === 0) {
@@ -261,9 +261,9 @@ const getPeminjamanHistoryById = async (req, res) => {
     const peminjamanHistory = await PeminjamanHistoryModel.findById(peminjamanHistoryId)
       .populate({
         path: 'id_peminjaman',
-        populate: { path: 'id_aset' }
+        populate: { path: 'id_aset' },
+        populate: { path: 'id_user', select: 'username'}
       })
-      .populate('id_user', 'username')
       .populate('id_admin', 'username');
 
     if (peminjamanHistory.length === 0) {
