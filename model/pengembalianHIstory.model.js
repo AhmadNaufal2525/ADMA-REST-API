@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 
 const pengembalianHistorySchema = new mongoose.Schema(
   {
-    id_peminjaman: {
+    id_pengembalian: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Peminjaman',
+      ref: 'Pengembalian',
       required: true,
     },
     id_user: {
