@@ -291,4 +291,41 @@ const rejectPengembalian = async (req, res) => {
   }
 };
 
-module.exports = { createPengembalian, getAllPengembalian, getPengembalianById, getPengembalianByUserId, rejectPengembalian, acceptPengembalian };
+const getPengembalianHistory = async (req, res) => {
+  try {
+    const pengembalianId = req.params.id;
+    const pengembalianHistory = await PengembalianHistoryModel.find().populate({id_pengembalian: pengembalianId}).populate('id_user').populate('id_admin');;
+
+    if (pengembalianHistory.length === 0) {
+      return res.status(404).json({ error: 'No pengembalian history found' });
+    }
+
+    res.status(200).json({
+      message: 'Pengembalian history retrieved successfully',
+      pengembalianHistory,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Error retrieving pengembalian history: ' + error.message });
+  }
+};
+
+const getPengembalianHistoryById = async (req, res) => {
+  try {
+    const pengembalianHistoryId = req.params.id;
+    const pengembalianHistory = await PengembalianHistoryModel.findById(pengembalianHistoryId)
+      .populate('id_user').populate('id_admin');
+
+    if (!pengembalianHistory) {
+      return res.status(404).json({ error: 'Pengembalian history not found' });
+    }
+
+    res.status(200).json({
+      message: 'Pengembalian history retrieved successfully',
+      pengembalianHistory,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Error retrieving pengembalian history: ' + error.message });
+  }
+};
+
+module.exports = { createPengembalian, getAllPengembalian, getPengembalianById, getPengembalianByUserId, rejectPengembalian, acceptPengembalian, getPengembalianHistory, getPengembalianHistoryById };
