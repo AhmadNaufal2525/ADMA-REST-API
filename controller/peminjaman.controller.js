@@ -215,8 +215,8 @@ const getPeminjamanById = async (req, res) => {
   const peminjamanId = req.params.id;
   try {
     const peminjaman = await PeminjamanModel.findById(peminjamanId)
-      .populate("id_aset")
-      .populate("id_user", "username");
+      .populate('id_peminjaman', 'id_aset')
+      .populate('id_user', 'username');
 
     if (!peminjaman) {
       return res.status(404).json({ message: "Peminjaman not found" });
@@ -236,7 +236,7 @@ const getPeminjamanHistory = async (req, res) => {
   try {
     const peminjamanHistoryId = req.params.id;
     const peminjamanHistory = await PeminjamanHistoryModel.find(peminjamanHistoryId)
-      .populate("id_aset")
+      .populate('id_peminjaman', 'id_aset')
       .populate('id_user','username')
       .populate('id_admin', 'username');
 
