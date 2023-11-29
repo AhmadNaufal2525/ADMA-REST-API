@@ -235,8 +235,10 @@ const getPeminjamanById = async (req, res) => {
 const getPeminjamanHistory = async (req, res) => {
   try {
     const peminjamanHistory = await PeminjamanHistoryModel.find()
-      .populate('id_peminjaman')
-      .populate('id_aset')
+      .populate({
+        path: 'id_peminjaman',
+        populate: { path: 'id_aset' }
+      })
       .populate('id_user','username')
       .populate('id_admin', 'username');
 
@@ -257,8 +259,10 @@ const getPeminjamanHistoryById = async (req, res) => {
   try {
     const peminjamanHistoryId = req.params.id;
     const peminjamanHistory = await PeminjamanHistoryModel.findById(peminjamanHistoryId)
-      .populate('id_peminjaman')
-      .populate('id_aset')
+      .populate({
+        path: 'id_peminjaman',
+        populate: { path: 'id_aset' }
+      })
       .populate('id_user', 'username')
       .populate('id_admin', 'username');
 
