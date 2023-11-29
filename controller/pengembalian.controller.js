@@ -6,6 +6,7 @@ const PengembalianModel = require('../model/pengembalian.model');
 const config = require('../config/firebase.config');
 const { getStorage, ref, getDownloadURL, uploadBytesResumable } = require("firebase/storage");
 const multer = require('multer');
+const PengembalianHistoryModel = require('../model/pengembalianHIstory.model');
 
 
 initializeApp(config.firebaseConfig);
@@ -189,4 +190,105 @@ const getPengembalianById = async (req, res) => {
   }
 };
 
-module.exports = { createPengembalian, getAllPengembalian, getPengembalianById, getPengembalianByUserId };
+const acceptPengembalian = async (req, res) => {
+  try {
+    const pengambalianId = req.params.id;
+    const adminId = req.body.adminId;
+    const pengembalian = await PengembalianModel.findById(pengambalianId);
+
+    if (!pengembalian) {
+      return res.status(404).json({ error: 'Pengembalian not found' });
+    }
+
+    if (pengembalian.status === 'Approved') {
+      return res.status(400).json({ error: 'Peminjaman already approved' });
+    }
+
+    const aset = await AsetModel.findById(pengembalian.id_aset);
+    if (!aset) {
+      return res.status(404).json({ error: 'Corresponding asset not found' });
+    }
+    aset.is_borrowed = false;
+    await aset.save();
+
+    const historyEntry = new PengembalianHistoryModel({
+      id_pengembalian: pengembalian._id,
+      id_user: pengembalian.id_user,
+      action: 'Approved',
+      id_admin: adminId,
+    });
+    
+    pengembalian.status = "Approved";
+    await pengembalian.save();
+    await historyEntry.save();
+
+    setTimeout(async () => {
+      try {
+        const approvedPengembalian = await PengembalianModel.findByIdAndDelete(pengambalianId);
+        if (!approvedPengembalian) {
+          console.log('Pengembalian not found');
+        } else {
+          console.log('Pengembalian telah dihapus setelah 1 jam:', approvedPengembalian);
+        }
+      } catch (error) {
+        console.error('Error deleting pengembalian:', error);
+      }
+    }, 1 * 60 * 60 * 1000);
+
+    res.status(200).json({ message: 'Pengembalian accepted', pengembalian, adminId });
+  } catch (error) {
+    res.status(500).json({ error: 'Error accepting pengembalian: ' + error.message });
+  }
+};
+
+
+const rejectPengembalian = async (req, res) => {
+  try {
+    const pengambalianId = req.params.id;
+    const adminId = req.body.adminId;
+    const pengembalian = await PengembalianModel.findById(pengambalianId);
+
+    if (!pengembalian) {
+      return res.status(404).json({ error: 'Pengembalian not found' });
+    }
+
+    if (pengembalian.status === 'Approved') {
+      return res.status(400).json({ error: 'Peminjaman already approved' });
+    }
+
+    const aset = await AsetModel.findById(pengembalian.id_aset);
+    if (!aset) {
+      return res.status(404).json({ error: 'Corresponding asset not found' });
+    }
+
+    const historyEntry = new PengembalianHistoryModel({
+      id_pengembalian: pengembalian._id,
+      id_user: pengembalian.id_user,
+      action: 'Rejected',
+      id_admin: adminId,
+    });
+    
+    pengembalian.status = "Rejected";
+    await pengembalian.save();
+    await historyEntry.save();
+
+    setTimeout(async () => {
+      try {
+        const approvedPengembalian = await PengembalianModel.findByIdAndDelete(pengambalianId);
+        if (!approvedPengembalian) {
+          console.log('Pengembalian not found');
+        } else {
+          console.log('Pengembalian telah dihapus setelah 1 jam:', approvedPengembalian);
+        }
+      } catch (error) {
+        console.error('Error deleting pengembalian:', error);
+      }
+    }, 1 * 60 * 60 * 1000);
+
+    res.status(200).json({ message: 'Pengembalian accepted', pengembalian, adminId });
+  } catch (error) {
+    res.status(500).json({ error: 'Error accepting pengembalian: ' + error.message });
+  }
+};
+
+module.exports = { createPengembalian, getAllPengembalian, getPengembalianById, getPengembalianByUserId, rejectPengembalian, acceptPengembalian };
