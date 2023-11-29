@@ -236,8 +236,8 @@ const getPeminjamanHistory = async (req, res) => {
   try {
     const peminjamanHistoryId = req.params.id;
     const peminjamanHistory = await PeminjamanHistoryModel.find(peminjamanHistoryId)
-      .populate('id_user')
-      .populate('id_admin');
+      .populate('id_user','username')
+      .populate('id_admin', 'username');
 
     if (peminjamanHistory.length === 0) {
       return res.status(404).json({ error: 'No history found for this peminjaman' });
@@ -256,8 +256,8 @@ const getPeminjamanHistoryById = async (req, res) => {
   try {
     const peminjamanHistoryId = req.params.id;
     const peminjamanHistory = await PeminjamanHistoryModel.find(peminjamanHistoryId)
-      .populate('id_user')
-      .populate('id_admin');
+      .populate('id_user', 'username')
+      .populate('id_admin', 'username');
 
     if (peminjamanHistory.length === 0) {
       return res.status(404).json({ error: 'No history found for this peminjaman ID' });
