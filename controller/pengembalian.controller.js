@@ -295,9 +295,9 @@ const getPengembalianHistory = async (req, res) => {
   try {
     const pengembalianHistoryId = req.params.id;
     const pengembalianHistory = await PengembalianHistoryModel.find().populate(pengembalianHistoryId)
-    .populate('id_pengembalian', 'id_aset')
-    .populate('id_user','username')
-    .populate('id_admin', 'username');
+      .populate('id_pengembalian', 'id_aset')
+      .populate('id_user','username')
+      .populate('id_admin', 'username');
 
     if (pengembalianHistory.length === 0) {
       return res.status(404).json({ error: 'No pengembalian history found' });
@@ -316,9 +316,9 @@ const getPengembalianHistoryById = async (req, res) => {
   try {
     const pengembalianHistoryId = req.params.id;
     const pengembalianHistory = await PengembalianHistoryModel.findById(pengembalianHistoryId)
-    .populate('id_pengembalian', 'id_aset')
-    .populate('id_user','username')
-    .populate('id_admin', 'username');
+      .populate('id_pengembalian', 'id_aset')
+      .populate('id_user','username')
+      .populate('id_admin', 'username');
 
     if (!pengembalianHistory) {
       return res.status(404).json({ error: 'Pengembalian history not found' });
