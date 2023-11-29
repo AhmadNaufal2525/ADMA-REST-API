@@ -3,8 +3,10 @@ const UserModel = require('../model/users.model');
 const PeminjamanModel = require('../model/peminjaman.model');
 const PeminjamanHistoryModel = require('../model/peminjamanHistory.model');
 const FCM = require('fcm-node');
+const dotenv = require("dotenv");
+dotenv.config();
 
-const serverKey = 'BOuw9ntvbQER8B3w3uZn14GZpD9zMjGZD7OVryQVrA5vBOnQran5H1TUS4qp7M9N8McB0pOU5-FkYsQReLWQ8TQ';
+const serverKey = process.env.SERVER_KEY;
 const fcm = new FCM(serverKey);
 
 const createPeminjaman = async (req, res) => {
@@ -162,7 +164,7 @@ const acceptPeminjaman = async (req, res) => {
       }
     }, 1 * 60 * 60 * 1000);
 
-    const userToken = 'cgx_O28VSKi1IRxTL6ii0x:APA91bEuAinWGm83K0SqPkB4O32g1wOZQ313tpGab-RMfxjlHTOaXpzcgXm0yYnqYENM2R6SWX8RX4Kxa39fydkRnXcBgwZ5usjDEIdjQX2wP0jhnIvI_iE2y5NVXcYAv8ddPfM7GbUn';
+    const userToken = process.env.USER_TOKEN;
     const notificationTitle = 'Peminjaman Disetujui';
     const notificationBody = 'Peminjaman yang anda lakukan telah disetujui oleh Admin, silahkan ambil aset dan konfirmasi ke admin bidang';
     await sendNotification(userToken, notificationTitle, notificationBody);
