@@ -111,7 +111,7 @@ const acceptPeminjaman = async (req, res) => {
       id_admin: adminId,
     });
     
-    peminjaman.status = 'Approved';
+    peminjaman.status = "Approved";
     await historyEntry.save();
 
     setTimeout(async () => {
