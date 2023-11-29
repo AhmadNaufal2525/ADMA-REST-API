@@ -164,6 +164,10 @@ const acceptPeminjaman = async (req, res) => {
       }
     }, 1 * 60 * 60 * 1000);
 
+    const userToken = process.env.USER_TOKEN;
+    const notificationTitle = 'Peminjaman Disetujui';
+    const notificationBody = 'Peminjaman yang anda lakukan telah disetujui oleh Admin, silahkan ambil aset dan konfirmasi ke admin bidang';
+    await sendNotification(userToken, notificationTitle, notificationBody);
     
     res.status(200).json({ message: 'Peminjaman accepted', peminjaman, adminId });
   } catch (error) {
