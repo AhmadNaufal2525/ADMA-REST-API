@@ -10,7 +10,6 @@ const pengembalianHistorySchema = new mongoose.Schema(
     id_aset: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Aset',
-      required: true,
     },
     id_user: {
       type: mongoose.Schema.Types.ObjectId,
