@@ -278,7 +278,7 @@ const getPeminjamanById = async (req, res) => {
   const peminjamanId = req.params.id;
   try {
     const peminjaman = await PeminjamanModel.findById(peminjamanId)
-      .populate("id_peminjaman", "id_aset")
+      .populate("id_peminjaman")
       .populate("id_user", "username");
 
     if (!peminjaman) {
