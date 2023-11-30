@@ -158,23 +158,28 @@ const acceptPeminjaman = async (req, res) => {
     aset.is_borrowed = true;
     await aset.save();
 
-    setTimeout(async () => {
-      try {
-        const approvedPeminjaman = await PeminjamanModel.findByIdAndDelete(
-          peminjamanId
-        );
-        if (!approvedPeminjaman) {
-          console.log("Peminjaman not found");
-        } else {
-          console.log(
-            "Peminjaman telah dihapus setelah 1 jam:",
-            approvedPeminjaman
+    const deletionPromise = new Promise((resolve, reject) => {
+      setTimeout(async () => {
+        try {
+          const approvedPeminjaman = await PeminjamanModel.findByIdAndDelete(
+            peminjamanId
           );
+          if (!approvedPeminjaman) {
+            console.log("Peminjaman not found");
+          } else {
+            console.log(
+              "Peminjaman telah dihapus setelah 30 menit:",
+              approvedPeminjaman
+            );
+          }
+          resolve();
+        } catch (error) {
+          reject(error);
         }
-      } catch (error) {
-        console.error("Error deleting peminjaman:", error);
-      }
-    }, 1 * 60 * 60 * 1000);
+      }, 30 * 60 * 1000);
+    });
+
+    await deletionPromise;
 
     res
       .status(200)
@@ -225,23 +230,28 @@ const rejectPeminjaman = async (req, res) => {
     await historyEntry.save();
     await peminjaman.save();
 
-    setTimeout(async () => {
-      try {
-        const rejectedPeminjaman = await PeminjamanModel.findByIdAndDelete(
-          peminjamanId
-        );
-        if (!rejectedPeminjaman) {
-          console.log("Peminjaman not found");
-        } else {
-          console.log(
-            "Peminjaman telah dihapus setelah 1 jam:",
-            rejectedPeminjaman
+    const deletionPromise = new Promise((resolve, reject) => {
+      setTimeout(async () => {
+        try {
+          const rejectPeminjaman = await PeminjamanModel.findByIdAndDelete(
+            peminjamanId
           );
+          if (!rejectPeminjaman) {
+            console.log("Peminjaman not found");
+          } else {
+            console.log(
+              "Peminjaman telah dihapus setelah 30 menit:",
+              rejectPeminjaman
+            );
+          }
+          resolve();
+        } catch (error) {
+          reject(error);
         }
-      } catch (error) {
-        console.error("Error deleting peminjaman:", error);
-      }
-    }, 1 * 60 * 60 * 1000);
+      }, 30 * 60 * 1000);
+    });
+
+    await deletionPromise;
 
     res
       .status(200)

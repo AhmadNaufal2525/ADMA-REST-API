@@ -221,9 +221,9 @@ const sendNotification = async (userTopic, title, body) => {
 
 const acceptPengembalian = async (req, res) => {
   try {
-    const pengambalianId = req.params.id;
+    const pengembalianId = req.params.id;
     const adminId = req.body.adminId;
-    const pengembalian = await PengembalianModel.findById(pengambalianId);
+    const pengembalian = await PengembalianModel.findById(pengembalianId);
 
     if (!pengembalian) {
       return res.status(404).json({ error: 'Pengembalian not found' });
@@ -261,18 +261,28 @@ const acceptPengembalian = async (req, res) => {
       notificationBody
     );
 
-    setTimeout(async () => {
-      try {
-        const approvedPengembalian = await PengembalianModel.findByIdAndDelete(pengambalianId);
-        if (!approvedPengembalian) {
-          console.log('Pengembalian not found');
-        } else {
-          console.log('Pengembalian telah dihapus setelah 1 jam:', approvedPengembalian);
+    const deletionPromise = new Promise((resolve, reject) => {
+      setTimeout(async () => {
+        try {
+          const approvedPengembalian = await PengembalianModel.findByIdAndDelete(
+            pengembalianId
+          );
+          if (!approvedPengembalian) {
+            console.log("Pengembalian not found");
+          } else {
+            console.log(
+              "Pengembalian telah dihapus setelah 30 menit:",
+              approvedPengembalian
+            );
+          }
+          resolve();
+        } catch (error) {
+          reject(error);
         }
-      } catch (error) {
-        console.error('Error deleting pengembalian:', error);
-      }
-    }, 1 * 60 * 60 * 1000);
+      }, 30 * 60 * 1000);
+    });
+
+    await deletionPromise;
 
     res.status(200).json({ message: 'Pengembalian accepted', pengembalian, adminId });
   } catch (error) {
@@ -283,9 +293,9 @@ const acceptPengembalian = async (req, res) => {
 
 const rejectPengembalian = async (req, res) => {
   try {
-    const pengambalianId = req.params.id;
+    const pengembalianId = req.params.id;
     const adminId = req.body.adminId;
-    const pengembalian = await PengembalianModel.findById(pengambalianId);
+    const pengembalian = await PengembalianModel.findById(pengembalianId);
 
     if (!pengembalian) {
       return res.status(404).json({ error: 'Pengembalian not found' });
@@ -321,20 +331,30 @@ const rejectPengembalian = async (req, res) => {
       notificationBody
     );
 
-    setTimeout(async () => {
-      try {
-        const approvedPengembalian = await PengembalianModel.findByIdAndDelete(pengambalianId);
-        if (!approvedPengembalian) {
-          console.log('Pengembalian not found');
-        } else {
-          console.log('Pengembalian telah dihapus setelah 1 jam:', approvedPengembalian);
+    const deletionPromise = new Promise((resolve, reject) => {
+      setTimeout(async () => {
+        try {
+          const rejectPengembalian = await PengembalianModel.findByIdAndDelete(
+            pengembalianId
+          );
+          if (!rejectPengembalian) {
+            console.log("Pengembalian not found");
+          } else {
+            console.log(
+              "Pengembalian telah dihapus setelah 30 menit:",
+              rejectPengembalian
+            );
+          }
+          resolve();
+        } catch (error) {
+          reject(error);
         }
-      } catch (error) {
-        console.error('Error deleting pengembalian:', error);
-      }
-    }, 1 * 60 * 60 * 1000);
+      }, 30 * 60 * 1000);
+    });
 
-    res.status(200).json({ message: 'Pengembalian accepted', pengembalian, adminId });
+    await deletionPromise;
+
+    res.status(200).json({ message: 'Pengembalian rejected', pengembalian, adminId });
   } catch (error) {
     res.status(500).json({ error: 'Error accepting pengembalian: ' + error.message });
   }
