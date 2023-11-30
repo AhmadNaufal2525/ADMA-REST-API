@@ -90,7 +90,7 @@ const getAllPeminjaman = async (req, res) => {
   }
 };
 
-const sendNotification = async (userTopic, title, body) => {
+const sendNotification = async (userDevice, title, body) => {
   const url = "https://fcm.googleapis.com/fcm/send";
   const headers = {
     "Content-Type": "application/json",
@@ -101,7 +101,7 @@ const sendNotification = async (userTopic, title, body) => {
     const response = await axios.post(
       url,
       {
-        to: userTopic,
+        to: userDevice,
         notification: {
           title: title,
           body: body,
@@ -145,12 +145,11 @@ const acceptPeminjaman = async (req, res) => {
       id_admin: adminId,
     });
     await historyEntry.save();
-    // const userDeviceToken = process.env.USER_DEVICE_TOKEN; 
-    const userTopic = '/topics/accept_peminjaman';
+    const userDeviceToken = process.env.USER_DEVICE_TOKEN; 
     const notificationTitle = "Notifikasi Peminjaman";
     const notificationBody = "Peminjaman anda telah disetujui oleh Admin";
     await sendNotification(
-      userTopic,
+      userDeviceToken,
       notificationTitle,
       notificationBody
     );
@@ -217,12 +216,11 @@ const rejectPeminjaman = async (req, res) => {
       id_admin: adminId,
     });
     
-    const userTopic = 'reject_peminjaman';
-    // const userDeviceToken = process.env.USER_DEVICE_TOKEN; 
+    const userDeviceToken = process.env.USER_DEVICE_TOKEN; 
     const notificationTitle = "Notifikasi Peminjaman";
     const notificationBody = "Peminjaman anda ditolak, silahkan ajukan kembali aset yang akan dipinjam";
     await sendNotification(
-      userTopic,
+      userDeviceToken,
       notificationTitle,
       notificationBody
     );
@@ -230,28 +228,28 @@ const rejectPeminjaman = async (req, res) => {
     await historyEntry.save();
     await peminjaman.save();
 
-    // const deletionPromise = new Promise((resolve, reject) => {
-    //   setTimeout(async () => {
-    //     try {
-    //       const rejectPeminjaman = await PeminjamanModel.findByIdAndDelete(
-    //         peminjamanId
-    //       );
-    //       if (!rejectPeminjaman) {
-    //         console.log("Peminjaman not found");
-    //       } else {
-    //         console.log(
-    //           "Peminjaman telah dihapus setelah 30 menit:",
-    //           rejectPeminjaman
-    //         );
-    //       }
-    //       resolve();
-    //     } catch (error) {
-    //       reject(error);
-    //     }
-    //   }, 30 * 60 * 1000);
-    // });
+    const deletionPromise = new Promise((resolve, reject) => {
+      setTimeout(async () => {
+        try {
+          const rejectPeminjaman = await PeminjamanModel.findByIdAndDelete(
+            peminjamanId
+          );
+          if (!rejectPeminjaman) {
+            console.log("Peminjaman not found");
+          } else {
+            console.log(
+              "Peminjaman telah dihapus setelah 30 menit:",
+              rejectPeminjaman
+            );
+          }
+          resolve();
+        } catch (error) {
+          reject(error);
+        }
+      }, 30 * 60 * 1000);
+    });
 
-    // await deletionPromise;
+    await deletionPromise;
 
     res
       .status(200)

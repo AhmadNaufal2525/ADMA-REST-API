@@ -193,7 +193,7 @@ const getPengembalianById = async (req, res) => {
   }
 };
 
-const sendNotification = async (userTopic, title, body) => {
+const sendNotification = async (userDevice, title, body) => {
   const url = "https://fcm.googleapis.com/fcm/send";
   const headers = {
     "Content-Type": "application/json",
@@ -204,7 +204,7 @@ const sendNotification = async (userTopic, title, body) => {
     const response = await axios.post(
       url,
       {
-        to: userTopic,
+        to: userDevice,
         notification: {
           title: title,
           body: body,
@@ -251,12 +251,11 @@ const acceptPengembalian = async (req, res) => {
     await pengembalian.save();
     await historyEntry.save();
 
-    // const userDeviceToken = process.env.USER_DEVICE_TOKEN; 
-    const userTopic = '/topics/accept_pengembalian';
+    const userDeviceToken = process.env.USER_DEVICE_TOKEN; 
     const notificationTitle = "Notifikasi Pengembalian";
     const notificationBody = "Pengembalian anda telah disetujui oleh Admin";
     await sendNotification(
-      userTopic,
+      userDeviceToken,
       notificationTitle,
       notificationBody
     );
@@ -321,12 +320,11 @@ const rejectPengembalian = async (req, res) => {
     await pengembalian.save();
     await historyEntry.save();
 
-    // const userDeviceToken = process.env.USER_DEVICE_TOKEN;
-    const userTopic = '/topics/reject_pengembalian';
+    const userDeviceToken = process.env.USER_DEVICE_TOKEN;
     const notificationTitle = "Notifikasi Pengembalian";
     const notificationBody = "Pengembalian anda ditolak, silahkan ajukan kembali aset yang akan dikembalikan";
     await sendNotification(
-      userTopic,
+      userDeviceToken,
       notificationTitle,
       notificationBody
     );
