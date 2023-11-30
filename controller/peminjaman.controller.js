@@ -157,29 +157,6 @@ const acceptPeminjaman = async (req, res) => {
     aset.is_borrowed = true;
     await aset.save();
 
-    const deletionPromise = new Promise((resolve, reject) => {
-      setTimeout(async () => {
-        try {
-          const approvedPeminjaman = await PeminjamanModel.findByIdAndDelete(
-            peminjamanId
-          );
-          if (!approvedPeminjaman) {
-            console.log("Peminjaman not found");
-          } else {
-            console.log(
-              "Peminjaman telah dihapus setelah 30 menit:",
-              approvedPeminjaman
-            );
-          }
-          resolve();
-        } catch (error) {
-          reject(error);
-        }
-      }, 30 * 60 * 1000);
-    });
-
-    await deletionPromise;
-
     res
       .status(200)
       .json({ message: "Peminjaman accepted", peminjaman, adminId });
@@ -227,29 +204,6 @@ const rejectPeminjaman = async (req, res) => {
     peminjaman.status = "Rejected";
     await historyEntry.save();
     await peminjaman.save();
-
-    const deletionPromise = new Promise((resolve, reject) => {
-      setTimeout(async () => {
-        try {
-          const rejectPeminjaman = await PeminjamanModel.findByIdAndDelete(
-            peminjamanId
-          );
-          if (!rejectPeminjaman) {
-            console.log("Peminjaman not found");
-          } else {
-            console.log(
-              "Peminjaman telah dihapus setelah 30 menit:",
-              rejectPeminjaman
-            );
-          }
-          resolve();
-        } catch (error) {
-          reject(error);
-        }
-      }, 30 * 60 * 1000);
-    });
-
-    await deletionPromise;
 
     res
       .status(200)

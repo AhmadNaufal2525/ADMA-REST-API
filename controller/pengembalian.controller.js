@@ -260,29 +260,6 @@ const acceptPengembalian = async (req, res) => {
       notificationBody
     );
 
-    const deletionPromise = new Promise((resolve, reject) => {
-      setTimeout(async () => {
-        try {
-          const approvedPengembalian = await PengembalianModel.findByIdAndDelete(
-            pengembalianId
-          );
-          if (!approvedPengembalian) {
-            console.log("Pengembalian not found");
-          } else {
-            console.log(
-              "Pengembalian telah dihapus setelah 30 menit:",
-              approvedPengembalian
-            );
-          }
-          resolve();
-        } catch (error) {
-          reject(error);
-        }
-      }, 30 * 60 * 1000);
-    });
-
-    await deletionPromise;
-
     res.status(200).json({ message: 'Pengembalian accepted', pengembalian, adminId });
   } catch (error) {
     res.status(500).json({ error: 'Error accepting pengembalian: ' + error.message });
@@ -328,29 +305,6 @@ const rejectPengembalian = async (req, res) => {
       notificationTitle,
       notificationBody
     );
-
-    const deletionPromise = new Promise((resolve, reject) => {
-      setTimeout(async () => {
-        try {
-          const rejectPengembalian = await PengembalianModel.findByIdAndDelete(
-            pengembalianId
-          );
-          if (!rejectPengembalian) {
-            console.log("Pengembalian not found");
-          } else {
-            console.log(
-              "Pengembalian telah dihapus setelah 30 menit:",
-              rejectPengembalian
-            );
-          }
-          resolve();
-        } catch (error) {
-          reject(error);
-        }
-      }, 30 * 60 * 1000);
-    });
-
-    await deletionPromise;
 
     res.status(200).json({ message: 'Pengembalian rejected', pengembalian, adminId });
   } catch (error) {
