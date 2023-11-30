@@ -90,7 +90,7 @@ const getAllPeminjaman = async (req, res) => {
   }
 };
 
-const sendNotification = async (deviceToken, title, body) => {
+const sendNotification = async (userTopic, title, body) => {
   const url = "https://fcm.googleapis.com/fcm/send";
   const headers = {
     "Content-Type": "application/json",
@@ -101,7 +101,7 @@ const sendNotification = async (deviceToken, title, body) => {
     const response = await axios.post(
       url,
       {
-        to: deviceToken,
+        to: userTopic,
         notification: {
           title: title,
           body: body,
@@ -145,11 +145,12 @@ const acceptPeminjaman = async (req, res) => {
       id_admin: adminId,
     });
     await historyEntry.save();
-    const userDeviceToken = process.env.USER_DEVICE_TOKEN; 
+    // const userDeviceToken = process.env.USER_DEVICE_TOKEN; 
+    const userTopic = '/topics/accept_peminjaman';
     const notificationTitle = "Notifikasi Peminjaman";
     const notificationBody = "Peminjaman anda telah disetujui oleh Admin";
     await sendNotification(
-      userDeviceToken,
+      userTopic,
       notificationTitle,
       notificationBody
     );
@@ -210,12 +211,13 @@ const rejectPeminjaman = async (req, res) => {
       action: "Rejected",
       id_admin: adminId,
     });
-
-    const userDeviceToken = process.env.USER_DEVICE_TOKEN; 
+    
+    const userTopic = '/topics/reject_peminjaman';
+    // const userDeviceToken = process.env.USER_DEVICE_TOKEN; 
     const notificationTitle = "Notifikasi Peminjaman";
     const notificationBody = "Peminjaman anda ditolak, silahkan ajukan kembali aset yang akan dipinjam";
     await sendNotification(
-      userDeviceToken,
+      userTopic,
       notificationTitle,
       notificationBody
     );
