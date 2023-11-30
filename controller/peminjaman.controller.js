@@ -217,7 +217,7 @@ const rejectPeminjaman = async (req, res) => {
       id_admin: adminId,
     });
     
-    const userTopic = '/topics/reject_peminjaman';
+    const userTopic = 'reject_peminjaman';
     // const userDeviceToken = process.env.USER_DEVICE_TOKEN; 
     const notificationTitle = "Notifikasi Peminjaman";
     const notificationBody = "Peminjaman anda ditolak, silahkan ajukan kembali aset yang akan dipinjam";
@@ -230,28 +230,28 @@ const rejectPeminjaman = async (req, res) => {
     await historyEntry.save();
     await peminjaman.save();
 
-    const deletionPromise = new Promise((resolve, reject) => {
-      setTimeout(async () => {
-        try {
-          const rejectPeminjaman = await PeminjamanModel.findByIdAndDelete(
-            peminjamanId
-          );
-          if (!rejectPeminjaman) {
-            console.log("Peminjaman not found");
-          } else {
-            console.log(
-              "Peminjaman telah dihapus setelah 30 menit:",
-              rejectPeminjaman
-            );
-          }
-          resolve();
-        } catch (error) {
-          reject(error);
-        }
-      }, 30 * 60 * 1000);
-    });
+    // const deletionPromise = new Promise((resolve, reject) => {
+    //   setTimeout(async () => {
+    //     try {
+    //       const rejectPeminjaman = await PeminjamanModel.findByIdAndDelete(
+    //         peminjamanId
+    //       );
+    //       if (!rejectPeminjaman) {
+    //         console.log("Peminjaman not found");
+    //       } else {
+    //         console.log(
+    //           "Peminjaman telah dihapus setelah 30 menit:",
+    //           rejectPeminjaman
+    //         );
+    //       }
+    //       resolve();
+    //     } catch (error) {
+    //       reject(error);
+    //     }
+    //   }, 30 * 60 * 1000);
+    // });
 
-    await deletionPromise;
+    // await deletionPromise;
 
     res
       .status(200)
