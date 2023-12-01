@@ -120,8 +120,6 @@ const createPengembalian = async (req, res) => {
       const savedPengembalian = await newPengembalian.save();
 
       await aset.save();
-
-      existingPeminjaman.status = "Available";
       await existingPeminjaman.save();
 
       res.status(201).json({
