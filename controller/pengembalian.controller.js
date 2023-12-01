@@ -82,7 +82,7 @@ const createPengembalian = async (req, res) => {
       if (!existingPeminjaman) {
         return res.status(400).json({
           error: {
-            message: "No pending borrowing found for this asset and user",
+            message: "No approved borrowing found for this asset and user",
           },
         });
       }
