@@ -4,7 +4,7 @@ const { createPengembalian, getAllPengembalian, getPengembalianById, getPengemba
 const router = express.Router();
 
 router.post('/pengembalian', createPengembalian);
-router.get('/listPengembalian', getAllPengembalian);
+router.get('/listPengembali', getAllPengembalian);
 router.get('/listPengembali/:id', getPengembalianById);
 router.get('/pengembali/:id', getPengembalianByUserId);
 router.post('/acceptPengembalian/:id', acceptPengembalian);
