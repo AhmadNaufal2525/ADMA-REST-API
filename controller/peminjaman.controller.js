@@ -145,7 +145,6 @@ const acceptPeminjaman = async (req, res) => {
       id_admin: adminId,
     });
     await historyEntry.save();
-    // const userDeviceToken = process.env.USER_DEVICE_TOKEN;
     const topics = '/topics/accept_peminjaman' 
     const notificationTitle = "Notifikasi Peminjaman";
     const notificationBody = "Peminjaman anda telah disetujui oleh Admin";
@@ -194,11 +193,11 @@ const rejectPeminjaman = async (req, res) => {
       id_admin: adminId,
     });
     
-    const userDeviceToken = process.env.USER_DEVICE_TOKEN; 
+    const topics = '/topics/reject_peminjaman' 
     const notificationTitle = "Notifikasi Peminjaman";
     const notificationBody = "Peminjaman anda ditolak, silahkan ajukan kembali aset yang akan dipinjam";
     await sendNotification(
-      userDeviceToken,
+      topics,
       notificationTitle,
       notificationBody
     );
