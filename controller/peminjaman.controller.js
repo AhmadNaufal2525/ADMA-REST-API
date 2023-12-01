@@ -90,7 +90,7 @@ const getAllPeminjaman = async (req, res) => {
   }
 };
 
-const sendNotification = async (userDevice, title, body) => {
+const sendNotification = async (topics, title, body) => {
   const url = "https://fcm.googleapis.com/fcm/send";
   const headers = {
     "Content-Type": "application/json",
@@ -101,7 +101,7 @@ const sendNotification = async (userDevice, title, body) => {
     const response = await axios.post(
       url,
       {
-        to: userDevice,
+        to: topics,
         notification: {
           title: title,
           body: body,
@@ -145,11 +145,12 @@ const acceptPeminjaman = async (req, res) => {
       id_admin: adminId,
     });
     await historyEntry.save();
-    const userDeviceToken = process.env.USER_DEVICE_TOKEN; 
+    // const userDeviceToken = process.env.USER_DEVICE_TOKEN;
+    const topics = '/topics/accept_peminjaman' 
     const notificationTitle = "Notifikasi Peminjaman";
     const notificationBody = "Peminjaman anda telah disetujui oleh Admin";
     await sendNotification(
-      userDeviceToken,
+      topics,
       notificationTitle,
       notificationBody
     );
