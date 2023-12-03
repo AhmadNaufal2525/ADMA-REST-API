@@ -4,12 +4,12 @@ const { authenticate } = require('../middleware/auth.middleware');
 const router = express.Router();
 
 router.post('/peminjaman', createPeminjaman);
-router.get('/listPeminjam', getAllPeminjaman, authenticate);
-router.get('/listPeminjam/:id', getPeminjamanById, authenticate);
-router.get('/peminjam/:id', getPeminjamanByUserId, authenticate);
+router.get('/listPeminjam', authenticate, getAllPeminjaman);
+router.get('/listPeminjam/:id', authenticate, getPeminjamanById);
+router.get('/peminjam/:id', authenticate, getPeminjamanByUserId);
 router.post('/acceptPeminjaman/:id', acceptPeminjaman);
 router.post('/rejectPeminjaman/:id', rejectPeminjaman);
-router.get('/peminjamanHistory', getPeminjamanHistory, authenticate);
-router.get('/peminjamanHistory/:id', getPeminjamanHistoryById, authenticate);
+router.get('/peminjamanHistory', authenticate, getPeminjamanHistory);
+router.get('/peminjamanHistory/:id', authenticate, getPeminjamanHistoryById);
 
 module.exports = router;

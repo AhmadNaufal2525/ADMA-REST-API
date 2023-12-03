@@ -4,8 +4,8 @@ const { authenticate } = require('../middleware/auth.middleware');
 
 const router = express.Router();
 
-router.get('/aset', getAllAset, authenticate);
-router.get('/aset/tagNumber/:tag_number', getAssetByTagNumber, authenticate);
+router.get('/aset', authenticate, getAllAset);
+router.get('/aset/tagNumber/:tag_number', authenticate, getAssetByTagNumber);
 router.post('/addAset', addNewAset);
 
 module.exports = router;
