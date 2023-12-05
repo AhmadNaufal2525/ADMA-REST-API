@@ -104,4 +104,83 @@ const addNewAset = async (req, res) => {
   }
 };
 
-module.exports = { getAllAset, getAssetByTagNumber, addNewAset };
+const getAssetById = async (req, res) => {
+  const assetId = req.params.asset_id;
+  try {
+    const asset = await AsetModel.findById(assetId);
+    if (!asset) {
+      return res.status(404).json({
+        error: {
+          message: "Asset not found",
+        },
+      });
+    }
+    res.status(200).json({
+      message: "Asset retrieved successfully by ID",
+      data: asset,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: {
+        message: "Error fetching asset",
+        details: error.message,
+      },
+    });
+  }
+};
+
+const updateAssetById = async (req, res) => {
+  const assetId = req.params.asset_id;
+  try {
+    const updatedAsset = await AsetModel.findByIdAndUpdate(
+      assetId,
+      { $set: req.body },
+      { new: true }
+    );
+    if (!updatedAsset) {
+      return res.status(404).json({
+        error: {
+          message: "Asset not found",
+        },
+      });
+    }
+    res.status(200).json({
+      message: "Asset updated successfully",
+      data: updatedAsset,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: {
+        message: "Error updating asset",
+        details: error.message,
+      },
+    });
+  }
+};
+
+const deleteAssetById = async (req, res) => {
+  const assetId = req.params.asset_id;
+  try {
+    const deletedAsset = await AsetModel.findByIdAndDelete(assetId);
+    if (!deletedAsset) {
+      return res.status(404).json({
+        error: {
+          message: "Asset not found",
+        },
+      });
+    }
+    res.status(200).json({
+      message: "Asset deleted successfully",
+      data: deletedAsset,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: {
+        message: "Error deleting asset",
+        details: error.message,
+      },
+    });
+  }
+};
+
+module.exports = { getAllAset, getAssetByTagNumber, addNewAset, getAssetById, updateAssetById, deleteAssetById };
