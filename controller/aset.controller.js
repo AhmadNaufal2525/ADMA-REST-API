@@ -105,9 +105,9 @@ const addNewAset = async (req, res) => {
 };
 
 const getAssetById = async (req, res) => {
-  const assetId = req.params.asset_id;
+  const id = req.params.id;
   try {
-    const asset = await AsetModel.findById(assetId);
+    const asset = await AsetModel.findById(id);
     if (!asset) {
       return res.status(404).json({
         error: {
@@ -130,10 +130,10 @@ const getAssetById = async (req, res) => {
 };
 
 const updateAssetById = async (req, res) => {
-  const assetId = req.params.asset_id;
+  const id = req.params.id;
   try {
     const updatedAsset = await AsetModel.findByIdAndUpdate(
-      assetId,
+      id,
       { $set: req.body },
       { new: true }
     );
@@ -159,9 +159,9 @@ const updateAssetById = async (req, res) => {
 };
 
 const deleteAssetById = async (req, res) => {
-  const assetId = req.params.asset_id;
+  const id = req.params.id;
   try {
-    const deletedAsset = await AsetModel.findByIdAndDelete(assetId);
+    const deletedAsset = await AsetModel.findByIdAndDelete(id);
     if (!deletedAsset) {
       return res.status(404).json({
         error: {
