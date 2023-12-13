@@ -90,18 +90,18 @@ const getAllPeminjaman = async (req, res) => {
   }
 };
 
-const sendNotification = async (topics, title, body) => {
+const sendNotification = async (userId, title, body) => {
   const url = "https://fcm.googleapis.com/fcm/send";
   const headers = {
     "Content-Type": "application/json",
-    Authorization:`key=${process.env.FCM_SERVER_KEY}`,
+    Authorization: `key=${process.env.FCM_SERVER_KEY}`,
   };
 
   try {
     const response = await axios.post(
       url,
       {
-        to: topics,
+        to: userId, // Use the user ID directly
         notification: {
           title: title,
           body: body,
@@ -127,12 +127,16 @@ const acceptPeminjaman = async (req, res) => {
     }
 
     if (peminjaman.status === "Approved") {
-      return res.status(400).json({ error: "Peminjaman already approved" });
+      return res
+        .status(400)
+        .json({ error: "Peminjaman already approved" });
     }
 
     const aset = await AsetModel.findById(peminjaman.id_aset);
     if (!aset) {
-      return res.status(404).json({ error: "Corresponding asset not found" });
+      return res
+        .status(404)
+        .json({ error: "Corresponding asset not found" });
     }
 
     peminjaman.status = "Approved";
@@ -145,11 +149,14 @@ const acceptPeminjaman = async (req, res) => {
       id_admin: adminId,
     });
     await historyEntry.save();
-    const topics = '/topics/accept_peminjaman' 
+
+    const userId = peminjaman.id_user; // Get the user ID
     const notificationTitle = "Notifikasi Peminjaman";
-    const notificationBody = "Peminjaman anda telah disetujui oleh Admin";
+    const notificationBody =
+      "Peminjaman anda telah disetujui oleh Admin";
+
     await sendNotification(
-      topics,
+      userId,
       notificationTitle,
       notificationBody
     );
@@ -157,9 +164,11 @@ const acceptPeminjaman = async (req, res) => {
     aset.is_borrowed = true;
     await aset.save();
 
-    res
-      .status(200)
-      .json({ message: "Peminjaman accepted", peminjaman, adminId });
+    res.status(200).json({
+      message: "Peminjaman accepted",
+      peminjaman,
+      adminId,
+    });
   } catch (error) {
     res
       .status(500)
