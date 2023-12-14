@@ -1,4 +1,10 @@
 const AsetModel = require("../model/aset.model");
+const multer = require('multer');
+const fs = require('fs');
+const csv = require('csv-parser');
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage }).single('csvFile');
 
 const getAllAset = async (req, res) => {
   try {
@@ -183,4 +189,68 @@ const deleteAssetById = async (req, res) => {
   }
 };
 
-module.exports = { getAllAset, getAssetByTagNumber, addNewAset, getAssetById, updateAssetById, deleteAssetById };
+const addNewAsetFromCSV = async (req, res) => {
+  try {
+    upload(req, res, async function (err) {
+      if (err instanceof multer.MulterError) {
+        return res.status(400).json({
+          error: {
+            message: "Error uploading file",
+            details: err.message,
+          },
+        });
+      } else if (err) {
+        return res.status(500).json({
+          error: {
+            message: "Error uploading file",
+            details: err.message,
+          },
+        });
+      }
+      const file = req.file;
+      if (!file || file.mimetype !== 'text/csv') {
+        return res.status(400).json({
+          error: {
+            message: "Please upload a CSV file",
+          },
+        });
+      }
+
+      const results = [];
+      fs.createReadStream(file.buffer)
+        .pipe(csv())
+        .on('data', (data) => results.push(data))
+        .on('end', async () => {
+          const insertedAssets = [];
+          for (const row of results) {
+            const newAset = new AsetModel({
+              nama_alat: row.nama_alat,
+              tag_number: row.tag_number,
+              merek: row.merek,
+              tipe: row.tipe,
+              nomor_seri: row.nomor_seri,
+              penanggung_jawab: row.penanggung_jawab,
+              lokasi_aset: row.lokasi_aset,
+              is_borrowed: false,
+            });
+            const savedAset = await newAset.save();
+            insertedAssets.push(savedAset);
+          }
+
+          res.status(201).json({
+            message: "Assets added successfully from CSV",
+            data: insertedAssets,
+          });
+        });
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: {
+        message: "Error adding assets from CSV",
+        details: error.message,
+      },
+    });
+  }
+};
+
+module.exports = { getAllAset, getAssetByTagNumber, addNewAset, getAssetById, updateAssetById, deleteAssetById, addNewAsetFromCSV };

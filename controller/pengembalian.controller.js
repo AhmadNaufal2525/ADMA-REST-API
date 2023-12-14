@@ -9,6 +9,7 @@ const multer = require('multer');
 const PengembalianHistoryModel = require('../model/pengembalianHIstory.model');
 const axios = require("axios");
 const dotenv = require("dotenv");
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 dotenv.config();
 
 
@@ -358,4 +359,51 @@ const getPengembalianHistoryById = async (req, res) => {
   }
 };
 
-module.exports = { createPengembalian, getAllPengembalian, getPengembalianById, getPengembalianByUserId, rejectPengembalian, acceptPengembalian, getPengembalianHistory, getPengembalianHistoryById };
+const getPengembalianHistoryToCSV = async (req, res) => {
+  try {
+    const pengembalianHistory = await PengembalianHistoryModel.find()
+      .populate({
+        path: 'id_pengembalian',
+        populate: { path: 'id_aset' }
+      })
+      .populate('id_user', 'username')
+      .populate('id_admin', 'username');
+
+    if (pengembalianHistory.length === 0) {
+      return res.status(404).json({ error: 'No pengembalian history found' });
+    }
+
+    const csvHeaders = [
+      { id: 'id', title: 'ID' },
+      { id: 'id_pengembalian', title: 'Pengembalian ID' },
+      { id: 'aset', title: 'Aset' },
+      { id: 'username_user', title: 'User' },
+      { id: 'action', title: 'Action' },
+      { id: 'tanggal', title: 'Tanggal' },
+      { id: 'admin', title: 'Admin' }
+    ];
+
+    const records = pengembalianHistory.map(history => ({
+      id: history._id,
+      id_pengembalian: history.id_pengembalian._id,
+      aset: history.id_pengembalian.id_aset.name,
+      username_user: history.id_user.username,
+      action: history.action,
+      tanggal: history.createdAt,
+      admin: history.id_admin.username
+    }));
+
+    const csvWriter = createCsvWriter({
+      path: 'Riwayat Pengembalian.csv',
+      header: csvHeaders
+    });
+    await csvWriter.writeRecords(records);
+
+    res.status(200).json({ message: 'Pengembalian history exported to CSV' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error exporting pengembalian history to CSV: ' + error.message });
+  }
+};
+
+
+module.exports = { createPengembalian, getAllPengembalian, getPengembalianById, getPengembalianByUserId, rejectPengembalian, acceptPengembalian, getPengembalianHistory, getPengembalianHistoryById, getPengembalianHistoryToCSV };

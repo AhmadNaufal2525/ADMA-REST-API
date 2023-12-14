@@ -4,6 +4,7 @@ const PeminjamanModel = require("../model/peminjaman.model");
 const PeminjamanHistoryModel = require("../model/peminjamanHistory.model");
 const axios = require("axios");
 const dotenv = require("dotenv");
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 dotenv.config();
 
 const createPeminjaman = async (req, res) => {
@@ -317,6 +318,52 @@ const getPeminjamanHistoryById = async (req, res) => {
   }
 };
 
+
+
+const getPeminjamanHistoryToCSV = async (req, res) => {
+  try {
+    const peminjamanHistory = await PeminjamanHistoryModel.find()
+      .populate('id_aset')
+      .populate('id_user', 'username')
+      .populate('id_admin', 'username');
+
+    if (peminjamanHistory.length === 0) {
+      return res.status(404).json({ error: 'No peminjaman history found' });
+    }
+
+    const csvHeaders = [
+      { id: 'id', title: 'ID' },
+      { id: 'id_peminjaman', title: 'Peminjaman ID' },
+      { id: 'aset', title: 'Aset' },
+      { id: 'username_user', title: 'User' },
+      { id: 'action', title: 'Action' },
+      { id: 'tanggal', title: 'Tanggal' },
+      { id: 'admin', title: 'Admin' }
+    ];
+
+    const records = peminjamanHistory.map(history => ({
+      id: history._id,
+      id_peminjaman: history.id_peminjaman._id,
+      aset: history.id_peminjaman.id_aset.name,
+      username_user: history.id_user.username,
+      action: history.action,
+      tanggal: history.createdAt,
+      admin: history.id_admin.username
+    }));
+
+    const csvWriter = createCsvWriter({
+      path: 'Riwayat Peminjaman.csv',
+      header: csvHeaders
+    });
+
+    await csvWriter.writeRecords(records);
+
+    res.status(200).json({ message: 'Peminjaman history exported to CSV' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error exporting peminjaman history to CSV: ' + error.message });
+  }
+};
+
 module.exports = {
   createPeminjaman,
   getAllPeminjaman,
@@ -326,4 +373,5 @@ module.exports = {
   getPeminjamanById,
   getPeminjamanHistory,
   getPeminjamanHistoryById,
+  getPeminjamanHistoryToCSV
 };

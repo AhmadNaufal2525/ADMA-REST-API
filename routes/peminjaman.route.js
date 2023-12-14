@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllPeminjaman, createPeminjaman, getPeminjamanByUserId, acceptPeminjaman, rejectPeminjaman, getPeminjamanById, getPeminjamanHistory, getPeminjamanHistoryById } = require('../controller/peminjaman.controller');
+const { getAllPeminjaman, createPeminjaman, getPeminjamanByUserId, acceptPeminjaman, rejectPeminjaman, getPeminjamanById, getPeminjamanHistory, getPeminjamanHistoryById, getPeminjamanHistoryToCSV } = require('../controller/peminjaman.controller');
 const { authenticate } = require('../middleware/auth.middleware');
 const router = express.Router();
 
@@ -11,5 +11,6 @@ router.post('/acceptPeminjaman/:id', acceptPeminjaman);
 router.post('/rejectPeminjaman/:id', rejectPeminjaman);
 router.get('/peminjamanHistory', authenticate, getPeminjamanHistory);
 router.get('/peminjamanHistory/:id', authenticate, getPeminjamanHistoryById);
+router.get('/export/peminjaman-history', getPeminjamanHistoryToCSV);
 
 module.exports = router;
