@@ -33,6 +33,10 @@ const PeminjamanSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    waktu_peminjaman: {
+        type: String,
+        required: true
+    },
     jenis: {
         type: String,
         default: "Peminjaman"
