@@ -14,6 +14,7 @@ const createPeminjaman = async (req, res) => {
       kondisi_aset,
       tanggal_peminjaman,
       tujuan_peminjaman,
+      waktu_peminjaman,
       tagNumber,
       username,
     } = req.body;
@@ -51,6 +52,7 @@ const createPeminjaman = async (req, res) => {
       kondisi_aset,
       tanggal_peminjaman,
       tujuan_peminjaman,
+      waktu_peminjaman,
       id_aset: aset._id,
       id_user: user._id,
       status: "Pending",
