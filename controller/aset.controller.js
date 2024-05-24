@@ -2,6 +2,8 @@ const AsetModel = require("../model/aset.model");
 const multer = require('multer');
 const fs = require('fs');
 const csv = require('csv-parser');
+const PeminjamanModel = require("../model/peminjaman.model");
+const PengembalianHistory = require("../model/pengembalianHIstory.model");
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }).single('csvFile');
@@ -253,4 +255,22 @@ const addNewAsetFromCSV = async (req, res) => {
   }
 };
 
-module.exports = { getAllAset, getAssetByTagNumber, addNewAset, getAssetById, updateAssetById, deleteAssetById, addNewAsetFromCSV };
+const getAllHistory = async (req, res) => {
+  try {
+    const [peminjaman, pengembalian] = await Promise.all([
+      PeminjamanModel.find().populate("id_aset").populate("id_user", "username"),
+      PengembalianHistory.find().populate("id_aset").populate("id_user", "username")
+    ]);
+
+    res.status(200).json({
+      message: "Daftar riwayat berhasil diambil",
+      peminjaman,
+      pengembalian
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Gagal mengambil daftar riwayat: " + error.message });
+  }
+};
+
+
+module.exports = { getAllAset, getAssetByTagNumber, addNewAset, getAssetById, updateAssetById, deleteAssetById, addNewAsetFromCSV, getAllHistory };
