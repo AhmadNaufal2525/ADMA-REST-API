@@ -262,15 +262,20 @@ const getAllHistory = async (req, res) => {
       PengembalianModel.find().populate("id_aset").populate("id_user", "username")
     ]);
 
+    const history = [
+      ...peminjaman.map(item => ({ ...item.toObject(), jenis: "Peminjaman" })),
+      ...pengembalian.map(item => ({ ...item.toObject(), jenis: "Pengembalian" }))
+    ];
+
     res.status(200).json({
       message: "Daftar riwayat berhasil diambil",
-      peminjaman,
-      pengembalian
+      history
     });
   } catch (error) {
     res.status(500).json({ error: "Gagal mengambil daftar riwayat: " + error.message });
   }
 };
+
 
 
 module.exports = { getAllAset, getAssetByTagNumber, addNewAset, getAssetById, updateAssetById, deleteAssetById, addNewAsetFromCSV, getAllHistory };
