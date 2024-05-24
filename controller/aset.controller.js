@@ -4,6 +4,8 @@ const fs = require('fs');
 const csv = require('csv-parser');
 const PeminjamanModel = require("../model/peminjaman.model");
 const PengembalianModel = require("../model/pengembalian.model");
+const PeminjamanHistory = require("../model/peminjamanHistory.model");
+const PengembalianHistory = require("../model/pengembalianHIstory.model");
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }).single('csvFile');
@@ -257,20 +259,20 @@ const addNewAsetFromCSV = async (req, res) => {
 
 const getAllHistory = async (req, res) => {
   try {
-    const [peminjaman, pengembalian] = await Promise.all([
-      PeminjamanModel.find()
-        .populate("id_aset")
-        .populate("id_user", "username")
-        .populate("id_admin", "username"),
-      PengembalianModel.find()
-        .populate("id_aset")
-        .populate("id_user", "username")
-        .populate("id_admin", "username")
+    const [peminjaman, pengembalian, peminjamanHistory, pengembalianHistory] = await Promise.all([
+      PeminjamanModel.find().populate("id_aset").populate("id_user", "username"),
+      PengembalianModel.find().populate("id_aset").populate("id_user", "username"),
+      PeminjamanHistory.find()
+        .populate('id_admin', 'username'),
+      PengembalianHistory.find()
+        .populate('id_admin', 'username')
     ]);
 
     const history = [
       ...peminjaman.map(item => ({ ...item.toObject(), jenis: "Peminjaman" })),
-      ...pengembalian.map(item => ({ ...item.toObject(), jenis: "Pengembalian" }))
+      ...pengembalian.map(item => ({ ...item.toObject(), jenis: "Pengembalian" })),
+      ...peminjamanHistory.map(item => ({ ...item.toObject(), jenis: 'History' })),
+      ...pengembalianHistory.map(item => ({ ...item.toObject(), jenis: 'History' })),
     ];
 
     res.status(200).json({
@@ -281,7 +283,6 @@ const getAllHistory = async (req, res) => {
     res.status(500).json({ error: "Gagal mengambil daftar riwayat: " + error.message });
   }
 };
-
 
 
 
