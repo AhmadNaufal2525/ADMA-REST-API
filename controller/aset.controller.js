@@ -258,8 +258,14 @@ const addNewAsetFromCSV = async (req, res) => {
 const getAllHistory = async (req, res) => {
   try {
     const [peminjaman, pengembalian] = await Promise.all([
-      PeminjamanModel.find().populate("id_aset").populate("id_user", "username"),
-      PengembalianModel.find().populate("id_aset").populate("id_user", "username")
+      PeminjamanModel.find()
+        .populate("id_aset")
+        .populate("id_user", "username")
+        .populate("id_admin", "username"),  // Add this line to populate admin
+      PengembalianModel.find()
+        .populate("id_aset")
+        .populate("id_user", "username")
+        .populate("id_admin", "username")  // Add this line to populate admin
     ]);
 
     const history = [
@@ -275,6 +281,7 @@ const getAllHistory = async (req, res) => {
     res.status(500).json({ error: "Gagal mengambil daftar riwayat: " + error.message });
   }
 };
+
 
 
 
