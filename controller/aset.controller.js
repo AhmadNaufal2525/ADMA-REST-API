@@ -266,7 +266,7 @@ const getAllHistory = async (req, res) => {
         .populate('id_user', 'username')
         .populate('id_admin', 'username'),
      PengembalianHistory.find()
-        .populate('id_peminjaman')
+        .populate('id_pengembalian')
         .populate('id_aset')
         .populate('id_user', 'username')
         .populate('id_admin', 'username'),
