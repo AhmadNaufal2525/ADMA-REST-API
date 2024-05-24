@@ -259,20 +259,22 @@ const addNewAsetFromCSV = async (req, res) => {
 
 const getAllHistory = async (req, res) => {
   try {
-    const [peminjaman, pengembalian, peminjamanHistory, pengembalianHistory] = await Promise.all([
-      PeminjamanModel.find().populate("id_aset").populate("id_user", "username"),
-      PengembalianModel.find().populate("id_aset").populate("id_user", "username"),
-      PeminjamanHistory.find()
+    const [peminjaman, pengembalian] = await Promise.all([
+     PeminjamanHistory.find()
+        .populate('id_peminjaman')
+        .populate('id_aset')
+        .populate('id_user', 'username')
         .populate('id_admin', 'username'),
-      PengembalianHistory.find()
-        .populate('id_admin', 'username')
+     PengembalianHistory.find()
+        .populate('id_peminjaman')
+        .populate('id_aset')
+        .populate('id_user', 'username')
+        .populate('id_admin', 'username'),
     ]);
 
     const history = [
       ...peminjaman.map(item => ({ ...item.toObject(), jenis: "Peminjaman" })),
       ...pengembalian.map(item => ({ ...item.toObject(), jenis: "Pengembalian" })),
-      ...peminjamanHistory.map(item => ({ ...item.toObject(), jenis: "Peminjaman" })),
-      ...pengembalianHistory.map(item => ({ ...item.toObject(), jenis: "Pengembalian" })),
     ];
 
     res.status(200).json({
