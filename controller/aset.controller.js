@@ -261,11 +261,11 @@ const getAllHistory = async (req, res) => {
       PeminjamanModel.find()
         .populate("id_aset")
         .populate("id_user", "username")
-        .populate("id_admin", "username"),  // Add this line to populate admin
+        .populate("id_admin", "username"),
       PengembalianModel.find()
         .populate("id_aset")
         .populate("id_user", "username")
-        .populate("id_admin", "username")  // Add this line to populate admin
+        .populate("id_admin", "username")
     ]);
 
     const history = [
