@@ -271,8 +271,8 @@ const getAllHistory = async (req, res) => {
     const history = [
       ...peminjaman.map(item => ({ ...item.toObject(), jenis: "Peminjaman" })),
       ...pengembalian.map(item => ({ ...item.toObject(), jenis: "Pengembalian" })),
-      ...peminjamanHistory.map(item => ({ ...item.toObject(), jenis: 'History' })),
-      ...pengembalianHistory.map(item => ({ ...item.toObject(), jenis: 'History' })),
+      ...peminjamanHistory.map(item => ({ ...item.toObject(), jenis: "Peminjaman" })),
+      ...pengembalianHistory.map(item => ({ ...item.toObject(), jenis: "Pengembalian" })),
     ];
 
     res.status(200).json({
