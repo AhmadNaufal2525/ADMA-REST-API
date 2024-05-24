@@ -260,31 +260,30 @@ const addNewAsetFromCSV = async (req, res) => {
 const getAllHistory = async (req, res) => {
   try {
     const [peminjaman, pengembalian] = await Promise.all([
-     PeminjamanHistory.find()
-        .populate('id_peminjaman')
-        .populate('id_aset')
+      PeminjamanHistory.find()
+        .populate({ path: 'id_peminjaman', populate: { path: 'id_aset' } })
         .populate('id_user', 'username')
         .populate('id_admin', 'username'),
-     PengembalianHistory.find()
-        .populate('id_pengembalian')
-        .populate('id_aset')
+      PengembalianHistory.find()
+        .populate({ path: 'id_pengembalian', populate: { path: 'id_aset' } })
         .populate('id_user', 'username')
         .populate('id_admin', 'username'),
     ]);
 
     const history = [
-      ...peminjaman.map(item => ({ ...item.toObject(), jenis: "Peminjaman" })),
-      ...pengembalian.map(item => ({ ...item.toObject(), jenis: "Pengembalian" })),
+      ...peminjaman.map(item => ({ ...item.toObject(), jenis: 'Peminjaman' })),
+      ...pengembalian.map(item => ({ ...item.toObject(), jenis: 'Pengembalian' })),
     ];
 
     res.status(200).json({
-      message: "Daftar riwayat berhasil diambil",
+      message: 'Daftar riwayat berhasil diambil',
       history
     });
   } catch (error) {
-    res.status(500).json({ error: "Gagal mengambil daftar riwayat: " + error.message });
+    res.status(500).json({ error: 'Gagal mengambil daftar riwayat: ' + error.message });
   }
 };
+
 
 
 
