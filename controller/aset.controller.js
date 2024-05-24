@@ -3,7 +3,7 @@ const multer = require('multer');
 const fs = require('fs');
 const csv = require('csv-parser');
 const PeminjamanModel = require("../model/peminjaman.model");
-const PengembalianHistory = require("../model/pengembalianHIstory.model");
+const PengembalianModel = require("../model/pengembalian.model");
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }).single('csvFile');
@@ -259,7 +259,7 @@ const getAllHistory = async (req, res) => {
   try {
     const [peminjaman, pengembalian] = await Promise.all([
       PeminjamanModel.find().populate("id_aset").populate("id_user", "username"),
-      PengembalianHistory.find().populate("id_aset").populate("id_user", "username")
+      PengembalianModel.find().populate("id_aset").populate("id_user", "username")
     ]);
 
     res.status(200).json({
